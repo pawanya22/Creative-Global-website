@@ -1,101 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="selection:bg-blue-500 selection:text-white dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Global — Premium Digital Experiences</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Creative Global | AI & Digital Experiences</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com">
     </script>
-    <script>
-        tailwind.config = {
-            corePlugins: {
-                preflight: false,
-            },
-            theme: {
-                extend: {
-                    colors: {
-                        brandBlue: '#2F7FB3',
-                        brandOrange: '#F47C2A',
-                        brandPurple: '#8A2BE2',
-                    }
-                }
-            }
-        }
-    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
     </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js">
     </script>
+
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js">
+    </script>
+
     <style>
         :root {
-            --primary-blue: #2F7FB3;
-            --primary-orange: #F47C2A;
-            --accent-purple: #8A2BE2;
-            --bg-black: #0a0a0a;
-            --bg-deep: #06060c;
-            --glass-bg: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-bg-hover: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.65);
-            --text-muted: rgba(255, 255, 255, 0.4);
-            --radius-lg: 28px;
-            --radius-xl: 36px;
-            --radius-2xl: 48px;
-            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --transition-slow: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --accent-blue: #0A84FF;
+            --accent-orange: #FF9F0A;
+            --dark-bg: #030305;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html {
-            scroll-behavior: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(244, 124, 42, 0.4) transparent;
-        }
-        html::-webkit-scrollbar {
-            width: 6px;
-        }
-        html::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        html::-webkit-scrollbar-thumb {
-            background: rgba(244, 124, 42, 0.5);
-            border-radius: 10px;
-        }
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: var(--bg-black);
-            color: #fff;
+            background-color: var(--dark-bg);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
             overflow-x: hidden;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            cursor: none;
         }
 
-        /* ── Grain Overlay ── */
-        .grain-overlay {
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .noise-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 9990;
-            opacity: 0.035;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 180px 180px;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
         }
 
-        /* ── Custom Cursor ── */
+        #app {
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 15, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+        }
+
         .cursor-dot,
         .cursor-outline {
             position: fixed;
@@ -103,1516 +85,657 @@
             left: 0;
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            z-index: 10000;
+            z-index: 9999;
             pointer-events: none;
-            transition: width 0.2s, height 0.2s, background 0.2s;
         }
         .cursor-dot {
             width: 6px;
             height: 6px;
-            background: white;
+            background-color: var(--accent-orange);
         }
         .cursor-outline {
-            width: 30px;
-            height: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .cursor-hover .cursor-dot {
-            width: 0;
-            height: 0;
-        }
-        .cursor-hover .cursor-outline {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            border-color: transparent;
-            backdrop-filter: blur(2px);
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(10, 132, 255, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
         }
 
-        /* ── Navigation ── */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 1.2rem 5%;
-            background: rgba(10, 10, 10, 0.75);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.5s var(--transition-smooth);
-        }
-        nav.scrolled {
-            padding: 0.8rem 5%;
-            background: rgba(10, 10, 10, 0.92);
-            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
-        }
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo-link {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            height: 50px;   /* 🔥 main size control */
-            width: auto;
-            object-fit: contain;
-        }
-        .nav-links {
-            display: flex;
-            gap: 2.5rem;
-            list-style: none;
-            align-items: center;
-            transition: all 0.4s ease;
-        }
-        .nav-links a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            letter-spacing: 0.04em;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.3rem 0;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 0;
-            height: 1.5px;
-            background: linear-gradient(90deg, var(--primary-orange), var(--primary-blue));
-            transition: width 0.35s var(--transition-smooth);
-            border-radius: 2px;
-        }
-        .nav-links a:hover {
-            color: #fff;
-        }
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* Hamburger Menu */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 24px;
-            height: 18px;
-            cursor: pointer;
-            z-index: 1001;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-        .hamburger span {
-            display: block;
-            height: 2px;
-            width: 100%;
-            background: #fff;
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-        /* Mobile Nav */
-        @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-            .nav-links {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 70%;
-                max-width: 300px;
-                height: 100vh;
-                background: rgba(10, 10, 10, 0.95);
-                backdrop-filter: blur(30px);
-                flex-direction: column;
-                justify-content: center;
-                padding: 2rem;
-                gap: 2rem;
-                transition: right 0.4s var(--transition-smooth);
-                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-                border-left: 1px solid rgba(255, 255, 255, 0.05);
-            }
-            .nav-links.active {
-                right: 0;
-            }
-            .nav-links a {
-                font-size: 1.2rem;
-            }
-            body.menu-open {
-                overflow: hidden;
-            }
-        }
-
-        /* ── Hero Specific Styles ── */
-        .glass {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
         .text-gradient {
-            background: linear-gradient(135deg, #2F7FB3, #8A2BE2, #F47C2A);
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-orange));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .reveal-text {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-        }
-        .char {
-            transform: translateY(110%);
-            display: inline-block;
+            color: rgba(255, 255, 255, 0.08);
+            background: linear-gradient(to right, #fff, #fff) no-repeat;
+            background-size: 0% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
         }
 
-        /* ── Sections Shared ── */
-        .section-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 5%;
+        .horizontal-scroll-wrapper {
+            width: max-content;
+            height: 100%;
+            display: flex;
+            flex-wrap: nowrap;
+            will-change: transform;
+            gap: 40px;
+            align-items: center;
         }
-        .section-header {
-            text-align: center;
-            margin-bottom: 5rem;
+        .work-card {
+            width: 38vw;
+            height: 55vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .section-header h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 900;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #fff, var(--primary-orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
-        }
-        .section-header p {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            max-width: 550px;
+        .work-content {
+            width: 90%;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* ── About Section ── */
-        .about {
-            padding: 10rem 5%;
-            position: relative;
-            background: linear-gradient(180deg, var(--bg-black) 0%, #0c0c18 100%);
-        }
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5rem;
-            align-items: center;
-        }
-        .about-content h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.6rem);
-            font-weight: 900;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, #fff, var(--primary-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-        .about-content p {
-            font-size: 1.05rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            line-height: 1.8;
-        }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-        .stat-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 2rem 1.5rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.5s var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            text-align: center;
-        }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 0;
-        }
-        .stat-card:hover {
-            transform: translateY(-12px);
-            border-color: rgba(47, 127, 179, 0.5);
-            box-shadow: 0 24px 60px rgba(47, 127, 179, 0.25);
-        }
-        .stat-card:hover::before {
-            opacity: 0.08;
-        }
-        .stat-card h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--primary-orange);
-            margin-bottom: 0.4rem;
-            position: relative;
-            z-index: 1;
-        }
-        .stat-card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            position: relative;
-            z-index: 1;
-            margin: 0;
-        }
-        .about-visual {
-            position: relative;
-            height: 550px;
-            border-radius: 36px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-        #about-canvas {
-            width: 100%;
-            height: 100%;
+        section {
+            scroll-margin-top: 120px;
         }
 
-        /* ── Portfolio Section ── */
-        .portfolio {
-            padding: 10rem 0;
-            background: var(--bg-black);
-            position: relative;
-            overflow: hidden;
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
         }
-        .portfolio .section-header {
-            padding: 0 5%;
+        .tilt-card-inner {
+            transform: translateZ(30px);
         }
-        .portfolio-horizontal {
-            display: flex;
-            gap: 2rem;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            padding: 2rem 5% 4rem;
-            scrollbar-width: none;
-            cursor: grab;
-        }
-        .portfolio-horizontal::-webkit-scrollbar {
+
+        ::-webkit-scrollbar {
             display: none;
         }
-        .portfolio-horizontal:active {
-            cursor: grabbing;
-        }
-        .project-card {
-            flex: 0 0 clamp(380px, 40vw, 520px);
-            height: 480px;
-            border-radius: var(--radius-xl);
-            scroll-snap-align: center;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(160deg, rgba(47, 127, 179, 0.08), rgba(244, 124, 42, 0.06));
-            border: 1px solid var(--glass-border);
-            transition: all 0.5s var(--transition-smooth);
-            flex-shrink: 0;
-            will-change: transform;
-        }
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(160deg, var(--primary-blue), var(--primary-orange), var(--accent-purple));
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 1;
-        }
-        .project-card:hover {
-            transform: translateY(-16px);
-            box-shadow: 0 35px 80px rgba(244, 124, 42, 0.35);
-            border-color: rgba(244, 124, 42, 0.4);
-        }
-        .project-card:hover::before {
-            opacity: 0.15;
-        }
-        .project-card-inner {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 2.5rem;
-            background: linear-gradient(to top, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.3) 50%, transparent 100%);
-        }
-        .project-tag {
-            display: inline-block;
-            padding: 0.4rem 1rem;
-            background: rgba(244, 124, 42, 0.15);
-            border: 1px solid rgba(244, 124, 42, 0.4);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--primary-orange);
-            margin-bottom: 1rem;
-            letter-spacing: 0.06em;
-            width: fit-content;
-            backdrop-filter: blur(4px);
-        }
-        .project-card-inner h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.7rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .project-card-inner p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .project-glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(244, 124, 42, 0.25) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .project-card:hover .project-glow {
-            opacity: 1;
-        }
-
-        /* ── Services Section ── */
-        .services {
-            padding: 10rem 5%;
-            background: linear-gradient(180deg, #0c0c18 0%, var(--bg-black) 100%);
-            position: relative;
-        }
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-top: 5rem;
-        }
-        .service-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 3rem 2.2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.5s var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            will-change: transform;
-        }
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(47, 127, 179, 0.2) 0%, transparent 65%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-14px);
-            border-color: rgba(47, 127, 179, 0.5);
-            box-shadow: 0 28px 70px rgba(47, 127, 179, 0.3);
-            background: var(--glass-bg-hover);
-        }
-        .service-card:hover::before {
-            opacity: 1;
-        }
-        .service-icon-container {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, rgba(47, 127, 179, 0.2), rgba(244, 124, 42, 0.2));
-            border: 1px solid rgba(47, 127, 179, 0.4);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-            transition: all 0.5s var(--transition-smooth);
-        }
-        .service-card:hover .service-icon-container {
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 40px rgba(244, 124, 42, 0.4);
-            transform: scale(1.05);
-        }
-        .service-icon-container svg {
-            width: 32px;
-            height: 32px;
-            stroke: var(--primary-orange);
-            fill: none;
-            stroke-width: 1.8;
-            transition: all 0.5s var(--transition-smooth);
-        }
-        .service-card:hover .service-icon-container svg {
-            stroke: #fff;
-            filter: drop-shadow(0 0 8px rgba(244, 124, 42, 0.6));
-        }
-        .service-card h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-        .service-card p {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            position: relative;
-            z-index: 1;
-            font-size: 0.95rem;
-        }
-
-        /* ── Testimonials Section ── */
-        .testimonials {
-            padding: 10rem 5%;
-            background: var(--bg-black);
-            overflow: hidden;
-            position: relative;
-        }
-        .testimonial-carousel {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            position: relative;
-            min-height: 420px;
-            perspective: 1200px;
-        }
-        .testimonial-card {
-            min-width: 420px;
-            max-width: 500px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 3rem;
-            backdrop-filter: blur(10px);
-            position: absolute;
-            transition: all 0.7s var(--transition-smooth);
-            will-change: transform, opacity, filter;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-        }
-        .testimonial-card.active {
-            transform: translateX(0) scale(1);
-            opacity: 1;
-            filter: blur(0);
-            z-index: 3;
-            border-color: rgba(244, 124, 42, 0.4);
-            box-shadow: 0 30px 70px rgba(244, 124, 42, 0.25);
-        }
-        .testimonial-card.left {
-            transform: translateX(-380px) scale(0.82);
-            opacity: 0.4;
-            filter: blur(3px);
-            z-index: 1;
-        }
-        .testimonial-card.right {
-            transform: translateX(380px) scale(0.82);
-            opacity: 0.4;
-            filter: blur(3px);
-            z-index: 1;
-        }
-        .testimonial-card.hidden-card {
-            transform: translateX(0) scale(0.7);
-            opacity: 0;
-            filter: blur(8px);
-            z-index: 0;
-            pointer-events: none;
-        }
-        .testimonial-quote-mark {
-            font-size: 6rem;
-            color: var(--primary-orange);
-            opacity: 0.12;
-            font-family: Georgia, serif;
-            line-height: 1;
-            margin-bottom: -1rem;
-        }
-        .testimonial-text {
-            font-size: 1.05rem;
-            line-height: 1.8;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .author-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-orange));
-            border: 2px solid rgba(244, 124, 42, 0.6);
-            flex-shrink: 0;
-        }
-        .author-info h4 {
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-            font-size: 0.95rem;
-        }
-        .author-info p {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-        .carousel-nav {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-            position: relative;
-            z-index: 5;
-        }
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            transition: all 0.4s ease;
-        }
-        .carousel-dot.active {
-            background: var(--primary-orange);
-            box-shadow: 0 0 16px rgba(244, 124, 42, 0.6);
-            width: 28px;
-            border-radius: 10px;
-        }
-
-        /* ── CTA Section ── */
-        .cta-section {
-            padding: 10rem 5%;
-            position: relative;
-            overflow: hidden;
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(ellipse at center, #0d0d1a 0%, #06060c 100%);
-        }
-        #cta-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        .cta-content {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            max-width: 800px;
-        }
-        .cta-content h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 900;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, #fff, var(--primary-orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
-        }
-        .cta-content p {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-        }
-        .btn-magnetic {
-            display: inline-block;
-            padding: 1.2rem 3.5rem;
-            font-size: 1.15rem;
-            font-weight: 700;
-            text-decoration: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, var(--primary-orange), #e0681a, var(--primary-blue));
-            background-size: 200% 200%;
-            color: #fff;
-            letter-spacing: 0.05em;
-            font-family: 'DM Sans', sans-serif;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 14px 50px rgba(244, 124, 42, 0.45);
-            animation: gradientFlow 4s ease infinite;
-            transition: transform 0.15s ease-out, box-shadow 0.4s ease;
-            will-change: transform;
-        }
-        @keyframes gradientFlow {
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-        .btn-magnetic:hover {
-            box-shadow: 0 22px 65px rgba(47, 127, 179, 0.65);
-        }
-        .btn-magnetic::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.7s;
-        }
-        .btn-magnetic:hover::before {
-            left: 100%;
-        }
-
-        /* ── Footer ── */
-        footer {
-            padding: 5rem 5% 2rem;
-            background: var(--bg-deep);
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            position: relative;
-            overflow: hidden;
-        }
-        .footer-orb {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            background: radial-gradient(circle, rgba(47, 127, 179, 0.08) 0%, transparent 70%);
-            transition: all 0.8s ease;
-            opacity: 0;
-        }
-        .footer-horizontal {
-            display: flex;
-            gap: 1.5rem;
-            overflow-x: auto;
-            padding: 1rem 0 3rem;
+        * {
+            -ms-overflow-style: none;
             scrollbar-width: none;
-            position: relative;
-            z-index: 1;
-            scroll-snap-type: x proximity;
-        }
-        .footer-horizontal::-webkit-scrollbar {
-            display: none;
-        }
-        .footer-card {
-            flex: 0 0 260px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 2.5rem 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.5s var(--transition-smooth);
-            scroll-snap-align: start;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            color: #fff;
-            display: block;
-        }
-        .footer-card:hover {
-            background: var(--glass-bg-hover);
-            border-color: rgba(47, 127, 179, 0.5);
-            box-shadow: 0 20px 50px rgba(47, 127, 179, 0.2);
-            transform: translateY(-8px);
-            flex: 0 0 300px;
-        }
-        .footer-card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(47, 127, 179, 0.2), rgba(244, 124, 42, 0.2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(47, 127, 179, 0.3);
-            transition: all 0.4s ease;
-        }
-        .footer-card:hover .footer-card-icon {
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 30px rgba(47, 127, 179, 0.3);
-        }
-        .footer-card-icon svg {
-            width: 22px;
-            height: 22px;
-            stroke: var(--primary-orange);
-            fill: none;
-            stroke-width: 1.6;
-        }
-        .footer-card h4 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .footer-card p {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
-        .footer-brand-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 2rem;
-            position: relative;
-            z-index: 1;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .footer-logo-img {
-            height: 50px;
-            width: auto;
-        }
-        .social-icons {
-            display: flex;
-            gap: 1rem;
-        }
-        .social-icon {
-            padding: 0.6rem 1.2rem;
-            border-radius: 30px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            text-decoration: none;
-            transition: all 0.35s var(--transition-smooth);
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .social-icon:hover {
-            background: var(--primary-orange);
-            border-color: var(--primary-orange);
-            box-shadow: 0 12px 35px rgba(244, 124, 42, 0.5);
-            transform: translateY(-6px);
-        }
-        .footer-copyright {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            position: relative;
-            z-index: 1;
-            padding-top: 1.5rem;
-        }
-        .animated-divider {
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-orange), var(--primary-blue), transparent);
-            background-size: 200% 100%;
-            animation: dividerFlow 6s linear infinite;
-            opacity: 0.4;
-            margin: 1rem 0;
-        }
-        @keyframes dividerFlow {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        /* ── Scroll Animations ── */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: all 1s var(--transition-smooth);
-        }
-        .fade-in.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 1024px) {
-            .about-grid {
-                grid-template-columns: 1fr;
-            }
-            .about-visual {
-                height: 380px;
-                order: -1;
-            }
-            .stats {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .testimonial-card {
-                min-width: 340px;
-                max-width: 400px;
-            }
-            .testimonial-card.left {
-                transform: translateX(-280px) scale(0.8);
-            }
-            .testimonial-card.right {
-                transform: translateX(280px) scale(0.8);
-            }
-            .footer-card {
-                flex: 0 0 220px;
-            }
-            .footer-card:hover {
-                flex: 0 0 260px;
-            }
-        }
-        @media (max-width: 768px) {
-            body {
-                cursor: auto;
-            }
-            body * {
-                cursor: auto;
-            }
-            .cursor-dot,
-            .cursor-outline {
-                display: none !important;
-            }
-            .portfolio-horizontal {
-                padding: 2rem 3% 3rem;
-            }
-            .project-card {
-                flex: 0 0 85vw;
-                height: 400px;
-            }
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-            .testimonial-carousel {
-                flex-direction: column;
-                min-height: auto;
-                perspective: none;
-                gap: 1rem;
-            }
-            .testimonial-card {
-                position: relative;
-                min-width: auto;
-                max-width: 100%;
-                transform: none !important;
-                opacity: 1 !important;
-                filter: none !important;
-                margin-bottom: 1rem;
-            }
-    
-            .testimonial-card.left,
-            .testimonial-card.right,
-            .testimonial-card.hidden-card {
-                display: none;
-            }
-            .carousel-nav {
-                display: flex;
-            }
-            .stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.8rem;
-            }
-            .stat-card {
-                padding: 1.2rem 0.8rem;
-            }
-            .stat-card h3 {
-                font-size: 2rem;
-            }
-            .footer-horizontal {
-                flex-wrap: wrap;
-                gap: 1rem;
-                justify-content: center;
-            }
-            .footer-card {
-                flex: 1 1 160px;
-                min-width: 150px;
-                padding: 1.5rem;
-            }
-            .footer-card:hover {
-                flex: 1 1 180px;
-            }
-            .nav-links a {
-                font-size: 1.2rem;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="grain-overlay"></div>
-    <div class="cursor-dot" id="cursorDot"></div>
-    <div class="cursor-outline" id="cursorOutline"></div>
 
-    <nav id="navbar">
-        <div class="nav-container">
-            <!-- SVG Logo Image -->
-            <a href="#" class="logo-link">
-                <img src="LOGO.png" alt="Creative Global Logo" class="logo-img">
-            </a>
-            <button class="hamburger" id="hamburger" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#about">About</a></li>
-                <li><a href="#portfolio">Work</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#testimonials">Clients</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <div class="noise-overlay"></div>
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
 
-    <!-- ══════════ HERO SECTION ══════════ -->
-    <section class="relative h-screen flex items-center justify-center overflow-hidden" id="hero">
-        <div id="webgl-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></div>
+    <div id="webgl-container"></div>
 
-        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
-            <div class="glass px-4 py-1 rounded-full mb-8 inline-flex items-center gap-2 border-white/10 hover-target">
-                <span class="w-2 h-2 rounded-full bg-brandOrange animate-pulse"></span>
-                <span class="text-xs tracking-widest uppercase text-gray-300">Award-Winning Digital Studio</span>
+    <div id="app">
+
+        <nav class="fixed top-0 w-full z-50 px-6 py-6 md:px-12 flex justify-between items-center mix-blend-difference">
+            <div class="font-heading font-black text-2xl tracking-tighter uppercase text-white hover:scale-105 transition-transform cursor-pointer">
+                <img src="LOGO.png" alt="Logo" class="h-14 w-auto">
+            </div>
+            <div class="hidden md:flex gap-8 text-[11px] font-semibold tracking-[0.2em] uppercase text-white/70">
+                <a href="#about" class="hover:text-white hover:tracking-[0.25em] transition-all">About</a>
+                <a href="#work" class="hover:text-white hover:tracking-[0.25em] transition-all">Work</a>
+                <a href="#services" class="hover:text-white hover:tracking-[0.25em] transition-all">Services</a>
+                <a href="#clients" class="hover:text-white hover:tracking-[0.25em] transition-all">Clients</a>
+                <a href="#contact" class="hover:text-white hover:tracking-[0.25em] transition-all">Contact</a>
+            </div>
+        </nav>
+
+        <!-- HERO SECTION (4x vh with sticky) -->
+        <section id="hero-trigger" class="relative h-[400vh] w-full">
+            <div class="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden pt-20">
+                <div class="hero-text text-center z-10 px-4 max-w-5xl mx-auto flex flex-col items-center">
+                    <!-- Removing "Award-Winning Digital Studio" subtitle -->
+                    <h1 class="hero-title text-3xl md:text-5xl lg:text-6xl font-heading font-black uppercase leading-[0.9]">
+                        Creativity <br>
+                        <span class="text-gradient">Without Limits.</span><br>
+                        Experiences <br>
+                        Without Boundaries.
+                    </h1>
+                    <p class="mt-8 text-sm md:text-base text-gray-400 max-w-2xl mx-auto font-light leading-relaxed hero-desc">
+                        We design and build next-generation digital experiences powered by cinematic motion, immersive 3D, and advanced technology.
+                    </p>
+                    <div class="hero-btns mt-12 flex flex-col md:flex-row gap-6">
+                        <button class="mag-btn relative overflow-hidden glass-panel px-10 py-4 font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all duration-300">
+                            Explore Our Work
+                        </button>
+                        <button class="mag-btn relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 rounded-full px-10 py-4 font-bold uppercase tracking-widest text-xs text-white shadow-[0_0_30px_rgba(10,132,255,0.3)] hover:shadow-[0_0_50px_rgba(10,132,255,0.6)] transition-all duration-300">
+                            Start Your Project
+                        </button>
+                    </div>
+                    <!-- Removed Scroll to Discover div -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section id="about" class="relative min-h-screen w-full flex items-center py-32 px-6 md:px-20 z-10">
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div class="about-text">
+                    <h2 class="text-blue-500 text-sm tracking-[0.3em] uppercase mb-6 font-bold">Where Vision Becomes Experience</h2>
+                    <h3 class="reveal-text text-4xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight mb-8">
+                        At Creative Global, we go beyond development — we create immersive digital ecosystems that transform how brands connect with people.
+                    </h3>
+                    <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+                        Our approach blends design, motion, and technology into seamless experiences that feel alive, intuitive, and unforgettable.
+                    </p>
+                    <p class="text-gray-400 text-lg leading-relaxed">
+                        From concept to execution, every detail is crafted to push boundaries and deliver measurable impact.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 stats-grid">
+                    <div class="glass-panel p-8 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="text-5xl font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 mb-2">150+</div>
+                            <p class="uppercase tracking-widest text-xs text-gray-500 font-semibold">Projects Delivered</p>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-8 tilt-card">
+                        <div class="tilt-card-inner">
+                            <div class="text-5xl font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400 mb-2">80+</div>
+                            <p class="uppercase tracking-widest text-xs text-gray-500 font-semibold">Global Clients</p>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-8 tilt-card sm:col-span-2">
+                        <div class="tilt-card-inner">
+                            <div class="text-5xl font-heading font-black text-white mb-2">5+</div>
+                            <p class="uppercase tracking-widest text-xs text-gray-500 font-semibold">Years of Innovation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORK SECTION (Horizontal Scroll) -->
+        <section id="work" class="relative h-screen flex items-center w-full overflow-hidden bg-black/40 backdrop-blur-sm z-10 border-y border-white/5 pt-32 md:pt-40">
+            <div class="absolute top-32 md:top-40 left-10 md:left-20 z-20 pointer-events-none">
+                <h2 class="text-[150px] font-heading font-black opacity-5 uppercase absolute -top-16 -left-10 text-white whitespace-nowrap">Portfolio</h2>
+                <h3 class="text-4xl font-heading font-bold relative text-white">Featured Work</h3>
+                <p class="text-blue-400 mt-2 text-sm tracking-widest uppercase">Designed to inspire. Engineered to perform.</p>
             </div>
 
-            <h1 class="text-3xl md:text-5xl lg:text-6xl font-heading font-bold leading-[1.15] tracking-tight mb-6 reveal-text" id="hero-title" style="font-family: 'Space Grotesk', sans-serif;">
-                CREATIVITY WITHOUT LIMITS.<br> <span class="text-gradient">EXPERIENCES WITHOUT BOUNDARIES.</span>
-            </h1>
+            <div class="horizontal-scroll-wrapper mt-16 md:mt-20">
+                <script>
+                    const works = [
+                        { category: "Web Application", title: "QuantumPay",
+                            desc: "A next-gen fintech platform powered by real-time 3D data visualization", color: "blue", img: "https://picsum.photos/800/600?random=1" },
+                        { category: "Brand Identity", title: "Cosmic Studios",
+                            desc: "A dynamic brand system enhanced with motion-driven experiences", color: "orange", img: "https://picsum.photos/800/600?random=2" },
+                        { category: "Interactive Experience", title: "NeuralFlow",
+                            desc: "AI-powered dashboards with immersive 3D environments", color: "blue", img: "https://picsum.photos/800/600?random=3" },
+                        { category: "E-Commerce", title: "LuxeMarket",
+                            desc: "A premium shopping experience with AR-powered interaction", color: "orange", img: "https://picsum.photos/800/600?random=4" },
+                        { category: "Platform", title: "MetaLearn",
+                            desc: "A future-ready learning ecosystem with gamified engagement", color: "blue", img: "https://picsum.photos/800/600?random=5" },
+                        { category: "Creative Portfolio", title: "ArtistryHub",
+                            desc: "A WebGL-powered showcase platform for modern creators", color: "white", img: "https://picsum.photos/800/600?random=6" }
+                    ];
 
-            <p class="text-lg text-gray-400 max-w-lg mx-auto font-light mb-10 hero-sub">
-                We design and build next-generation digital experiences powered by cinematic motion, immersive 3D, and advanced technology.
-            </p>
+                    works.forEach((work, i) => {
+                        const colorClass = work.color === 'blue' ? 'text-blue-500' : work.color === 'orange' ?
+                            'text-orange-500' : 'text-white';
+                        const bgClass = work.color === 'blue' ? 'bg-blue-500' : work.color === 'orange' ?
+                            'bg-orange-500' : 'bg-white';
 
-            <div class="flex flex-wrap gap-4 justify-center">
-                <button class="magnetic-btn hover-target px-8 py-4 rounded-full bg-white text-dark font-semibold text-base transition-transform duration-300 shadow-[0_0_30px_rgba(255,255,255,0.2)]" style="color: #0a0a0a; background: #fff;">
-                    Explore Our Work
-                </button>
-                <button class="magnetic-btn hover-target px-8 py-4 rounded-full border border-white/20 text-white font-semibold text-base backdrop-blur-sm bg-white/5 transition-all duration-300 hover:bg-white/10">
+                        document.write(`
+                            <div class="work-card">
+                                <div class="work-content glass-panel p-0 overflow-hidden group cursor-pointer relative flex flex-col">
+                                    <img src="${work.img}" class="w-full h-40 md:h-52 object-cover">
+                                    <div class="p-6 md:p-8 pt-10 md:pt-10">
+                                        <p class="${colorClass} uppercase tracking-[0.3em] text-xs mb-4 font-bold">0${i+1} // ${work.category}</p>
+                                        <h4 class="text-2xl md:text-3xl font-heading font-black mb-4 mt-4 ml-2 group-hover:pl-4 transition-all duration-500"></h4>
+                                        <p class="text-gray-400 text-sm md:text-base max-w-2xl">${work.desc}</p>
+                                        <div class="mt-6 h-[1px] w-0 group-hover:w-full ${bgClass} transition-all duration-700 ease-out"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+        </section>
+
+        <!-- SERVICES SECTION -->
+        <section id="services" class="relative py-40 px-6 md:px-20 z-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-24">
+                    <h2 class="text-5xl md:text-7xl font-heading font-black mb-6">What We Create</h2>
+                    <p class="text-gray-400 text-lg max-w-2xl mx-auto">We craft digital solutions that combine creativity, performance, and innovation.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-panel p-10 hover:-translate-y-2 transition-transform duration-300 group">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-8 border border-blue-500/30 group-hover:bg-blue-500 transition-colors">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full group-hover:bg-white"></div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 font-heading">Web Development</h5>
+                        <p class="text-gray-400 text-sm leading-relaxed">Scalable, high-performance web applications built for the future.</p>
+                    </div>
+                    <div class="glass-panel p-10 hover:-translate-y-2 transition-transform duration-300 group">
+                        <div class="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mb-8 border border-orange-500/30 group-hover:bg-orange-500 transition-colors">
+                            <div class="w-4 h-4 bg-orange-500 rounded-full group-hover:bg-white"></div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 font-heading">UI/UX Design</h5>
+                        <p class="text-gray-400 text-sm leading-relaxed">Intuitive, user-focused interfaces with refined visual storytelling.</p>
+                    </div>
+                    <div class="glass-panel p-10 hover:-translate-y-2 transition-transform duration-300 group">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mb-8 border border-purple-500/30 group-hover:bg-purple-500 transition-colors">
+                            <div class="w-4 h-4 bg-purple-500 rounded-full group-hover:bg-white"></div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 font-heading">3D & Motion Design</h5>
+                        <p class="text-gray-400 text-sm leading-relaxed">Cinematic animations and immersive digital experiences.</p>
+                    </div>
+                    <div class="glass-panel p-10 hover:-translate-y-2 transition-transform duration-300 group">
+                        <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-8 border border-white/30 group-hover:bg-white transition-colors">
+                            <div class="w-4 h-4 bg-white rounded-full group-hover:bg-black"></div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 font-heading">Branding</h5>
+                        <p class="text-gray-400 text-sm leading-relaxed">Strategic identity systems designed for global impact.</p>
+                    </div>
+                    <div class="glass-panel p-10 hover:-translate-y-2 transition-transform duration-300 group shadow-[0_0_30px_rgba(10,132,255,0.05)] border-blue-500/20">
+                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center mb-8 border border-blue-400 shadow-[0_0_15px_rgba(10,132,255,0.5)]">
+                            <div class="w-4 h-4 bg-white rounded-full animate-pulse"></div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 font-heading text-blue-400">AI Solutions</h5>
+                        <p class="text-gray-400 text-sm leading-relaxed">Smart automation and intelligent digital experiences.</p>
+                    </div>
+                    <div class="glass-panel p-10 hover:-translate-y-2 transition-transform duration-300 group">
+                        <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mb-8 border border-green-500/30 group-hover:bg-green-500 transition-colors">
+                            <div class="w-4 h-4 bg-green-500 rounded-full group-hover:bg-white"></div>
+                        </div>
+                        <h5 class="text-2xl font-bold mb-4 font-heading">Performance Eng.</h5>
+                        <p class="text-gray-400 text-sm leading-relaxed">Optimized speed, seamless interactions, and high-end performance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLIENTS SECTION -->
+        <section id="clients" class="relative py-32 px-6 md:px-20 z-10 overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-4xl font-heading font-bold mb-20 text-center uppercase tracking-widest text-white/50">Client Perspectives</h2>
+
+                <div class="flex flex-col gap-12 max-w-4xl mx-auto">
+                    <div class="glass-panel p-10 relative md:ml-0 md:mr-20">
+                        <span class="absolute -top-10 -left-6 text-8xl font-heading text-blue-500/20">"</span>
+                        <p class="text-xl md:text-2xl font-light leading-relaxed mb-8 relative z-10">Creative Global transformed our vision into an immersive digital experience beyond expectations.</p>
+                        <div>
+                            <h6 class="font-bold text-white uppercase tracking-widest text-sm">Sarah Chen</h6>
+                            <p class="text-blue-400 text-xs mt-1">CEO, TechVentures</p>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-10 relative md:ml-20 md:mr-0 border-orange-500/20">
+                        <span class="absolute -top-10 -left-6 text-8xl font-heading text-orange-500/20">"</span>
+                        <p class="text-xl md:text-2xl font-light leading-relaxed mb-8 relative z-10">They don't just build websites — they craft experiences that people remember.</p>
+                        <div>
+                            <h6 class="font-bold text-white uppercase tracking-widest text-sm">Marcus Rodriguez</h6>
+                            <p class="text-orange-400 text-xs mt-1">Founder, LuxeBrands</p>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-10 relative md:ml-10 md:mr-10">
+                        <span class="absolute -top-10 -left-6 text-8xl font-heading text-white/10">"</span>
+                        <p class="text-xl md:text-2xl font-light leading-relaxed mb-8 relative z-10">The level of detail, motion, and execution is truly world-class.</p>
+                        <div>
+                            <h6 class="font-bold text-white uppercase tracking-widest text-sm">Emily Watson</h6>
+                            <p class="text-gray-400 text-xs mt-1">CMO, InnovateCorp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="contact" class="relative pt-40 pb-10 px-6 md:px-20 z-10 bg-gradient-to-t from-black to-transparent">
+            <div class="max-w-7xl mx-auto flex flex-col items-center text-center border-b border-white/10 pb-20">
+                <h2 class="text-5xl md:text-8xl font-heading font-black mb-8">
+                    Let's Build Something <br> <span class="text-gradient">Extraordinary.</span>
+                </h2>
+                <p class="text-gray-400 text-lg mb-12">Ready to elevate your brand into a next-generation digital experience?</p>
+                <button class="mag-btn bg-white text-black rounded-full px-12 py-5 font-bold uppercase tracking-widest text-sm hover:bg-blue-500 hover:text-white transition-colors duration-300">
                     Start Your Project
                 </button>
             </div>
-        </div>
 
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-xs text-gray-500 tracking-widest uppercase flex flex-col items-center gap-2">
-            <span>Scroll to Discover</span>
-            <div class="w-[1px] h-12 bg-gradient-to-b from-gray-500 to-transparent"></div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="about fade-in" id="about">
-        <div class="section-container">
-            <div class="about-grid">
-                <div class="about-content">
-                    <h2>Where Vision Becomes Experience</h2>
-                    <p>At Creative Global, we go beyond development — we create immersive digital ecosystems that transform how brands connect with people.</p>
-                    <p>Our approach blends design, motion, and technology into seamless experiences that feel alive, intuitive, and unforgettable.</p>
-                    <p>From concept to execution, every detail is crafted to push boundaries and deliver measurable impact.</p>
-                    <div class="stats">
-                        <div class="stat-card"><h3 class="counter" data-target="150">0</h3><p>Projects Delivered</p></div>
-                        <div class="stat-card"><h3 class="counter" data-target="80">0</h3><p>Global Clients</p></div>
-                        <div class="stat-card"><h3 class="counter" data-target="5">0</h3><p>Years of Innovation</p></div>
+            <div class="max-w-7xl mx-auto mt-20 grid grid-cols-1 md:grid-cols-4 gap-12 text-sm text-gray-400">
+                <div>
+                    <h4 class="text-white font-bold mb-4 font-heading uppercase tracking-widest">About</h4>
+                    <p class="mb-2 hover:text-white cursor-pointer transition-colors">Our story, vision, and creative approach</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 font-heading uppercase tracking-widest">Work</h4>
+                    <p class="mb-2 hover:text-white cursor-pointer transition-colors">A showcase of our digital experiences</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 font-heading uppercase tracking-widest">Services</h4>
+                    <p class="mb-2 hover:text-white cursor-pointer transition-colors">Design, development, motion, and beyond</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 font-heading uppercase tracking-widest">Contact</h4>
+                    <a href="mailto:hello@creativeglobal.com" class="block mb-6 text-lg text-blue-400 hover:text-white transition-colors font-semibold">hello@creativeglobal.com</a>
+                    <div class="flex gap-4">
+                        <a href="#" class="hover:text-white transition-colors">Whatsapp</a>
+                        <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
+                        <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                        <a href="#" class="hover:text-white transition-colors">Facebook</a>
                     </div>
                 </div>
-                <div class="about-visual">
-                    <canvas id="about-canvas"></canvas>
-                </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Portfolio Section -->
-    <!-- <section class="portfolio fade-in" id="portfolio">
-        <div class="section-header">
-            <h2>Featured Work</h2>
-            <p>Designed to inspire. Engineered to perform.</p>
-        </div>
-        <div class="portfolio-horizontal" id="portfolioTrack">
-            <div class="project-card"><div class="project-glow"></div><div class="project-card-inner"><span class="project-tag">Web Application</span><h3>QuantumPay</h3><p>A next-gen fintech platform powered by real-time 3D data visualization</p></div></div>
-            <div class="project-card"><div class="project-glow"></div><div class="project-card-inner"><span class="project-tag">Brand Identity</span><h3>Cosmic Studios</h3><p>A dynamic brand system enhanced with motion-driven experiences</p></div></div>
-            <div class="project-card"><div class="project-glow"></div><div class="project-card-inner"><span class="project-tag">Interactive Experience</span><h3>NeuralFlow</h3><p>AI-powered dashboards with immersive 3D environments</p></div></div>
-            <div class="project-card"><div class="project-glow"></div><div class="project-card-inner"><span class="project-tag">E-Commerce</span><h3>LuxeMarket</h3><p>A premium shopping experience with AR-powered interaction</p></div></div>
-            <div class="project-card"><div class="project-glow"></div><div class="project-card-inner"><span class="project-tag">Platform</span><h3>MetaLearn</h3><p>A future-ready learning ecosystem with gamified engagement</p></div></div>
-            <div class="project-card"><div class="project-glow"></div><div class="project-card-inner"><span class="project-tag">Creative Portfolio</span><h3>ArtistryHub</h3><p>A WebGL-powered showcase platform for modern creators</p></div></div>
-        </div>
-    </section> -->
+            <p class="mt-20 text-center text-[10px] uppercase tracking-[0.4em] opacity-30">© 2026 Creative Global. All rights reserved.</p>
+        </footer>
+    </div>
 
-    <!-- Services Section -->
-    <!--<section class="services fade-in" id="services">
-        <div class="section-container">
-            <div class="section-header">
-                <h2>What We Create</h2>
-                <p>We craft digital solutions that combine creativity, performance, and innovation.</p>
-            </div>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline><line x1="12" y1="2" x2="12" y2="22"></line></svg></div>
-                    <h3>Web Development</h3><p>Scalable, high-performance web applications built for the future</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><circle cx="12" cy="9" r="2"></circle></svg></div>
-                    <h3>UI/UX Design</h3><p>Intuitive, user-focused interfaces with refined visual storytelling</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><line x1="12" y1="22" x2="12" y2="15.5"></line><polyline points="22 8.5 12 15.5 2 8.5"></polyline></svg></div>
-                    <h3>3D & Motion Design</h3><p>Cinematic animations and immersive digital experiences</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" fill-opacity="0.2"></polygon><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
-                    <h3>Branding</h3><p>Strategic identity systems designed for global impact</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line></svg></div>
-                    <h3>AI Solutions</h3><p>Smart automation and intelligent digital experiences</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
-                    <h3>Performance Engineering</h3><p>Optimized speed, seamless interactions, and high-end performance</p>
-                </div>
-            </div>
-        </div>
-    </section>-->
-
-    <!-- Testimonials Section -->
-    <!-- <section class="testimonials fade-in" id="testimonials">
-        <div class="section-container">
-            <div class="section-header"><h2>Client Perspectives</h2></div>
-            <div class="testimonial-carousel" id="testimonialCarousel">
-                <div class="testimonial-card active" data-index="0"><div class="testimonial-quote-mark">"</div><p class="testimonial-text">Creative Global transformed our vision into an immersive digital experience beyond expectations.</p><div class="testimonial-author"><div class="author-avatar"></div><div class="author-info"><h4>Sarah Chen</h4><p>CEO, TechVentures</p></div></div></div>
-                <div class="testimonial-card right" data-index="1"><div class="testimonial-quote-mark">"</div><p class="testimonial-text">They don't just build websites — they craft experiences that people remember.</p><div class="testimonial-author"><div class="author-avatar"></div><div class="author-info"><h4>Marcus Rodriguez</h4><p>Founder, LuxeBrands</p></div></div></div>
-                <div class="testimonial-card hidden-card" data-index="2"><div class="testimonial-quote-mark">"</div><p class="testimonial-text">The level of detail, motion, and execution is truly world-class.</p><div class="testimonial-author"><div class="author-avatar"></div><div class="author-info"><h4>Emily Watson</h4><p>CMO, InnovateCorp</p></div></div></div>
-            </div>
-            <div class="carousel-nav" id="carouselNav">
-                <button class="carousel-dot active" data-dot="0"></button>
-                <button class="carousel-dot" data-dot="1"></button>
-                <button class="carousel-dot" data-dot="2"></button>
-            </div>
-        </div>
-    </section> -->
-
-    <!-- CTA Section -->
-    <section class="cta-section" id="contact">
-        <canvas id="cta-canvas"></canvas>
-        <div class="cta-content">
-            <h2>Let's Build Something Extraordinary</h2>
-            <p>Ready to elevate your brand into a next-generation digital experience?</p>
-            <a href="mailto:hello@creativeglobal.com" class="btn-magnetic magnetic-btn">Start Your Project</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <!-- <footer>
-        <div class="footer-orb" id="footerOrb"></div>
-        <div class="footer-horizontal" id="footerTrack">
-            <a href="#about" class="footer-card"><div class="footer-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div><h4>About</h4><p>Our story, vision, and creative approach</p></a>
-            <a href="#portfolio" class="footer-card"><div class="footer-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg></div><h4>Work</h4><p>A showcase of our digital experiences</p></a>
-            <a href="#services" class="footer-card"><div class="footer-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><h4>Services</h4><p>Design, development, motion, and beyond</p></a>
-            <a href="mailto:hello@creativeglobal.com" class="footer-card"><div class="footer-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div><h4>Contact</h4><p>hello@creativeglobal.com</p></a>
-        </div>
-        <div class="animated-divider"></div>
-        <div class="footer-brand-row">
-            
-            <a href="#" class="logo-link">
-                <img src="LOGO.png" alt="Creative Global Logo" class="logo-img">
-            </a>
-            <div class="social-icons">
-                <a href="#" class="social-icon">Whatsapp</a>
-                <a href="#" class="social-icon">LinkedIn</a>
-                <a href="#" class="social-icon">Instagram</a>
-                <a href="#" class="social-icon">Facebook</a>
-            </div>
-        </div>
-        <div class="footer-copyright"><p>&copy; 2026 Creative Global. All rights reserved.</p></div>
-    </footer> -->
-
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js">
-    </script>
     <script>
-        // ──────────────────────────────────
-        // Lenis Smooth Scroll + GSAP
-        // ──────────────────────────────────
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 1. SMOOTH SCROLL SETUP (Lenis) ---
         const lenis = new Lenis({
             duration: 1.5,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
             smooth: true,
-        });
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => { lenis.raf(time * 1000) });
-        gsap.ticker.lagSmoothing(0);
-        gsap.registerPlugin(ScrollTrigger);
-
-        // ──────────────────────────────────
-        // Hamburger Menu Toggle
-        // ──────────────────────────────────
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        const body = document.body;
-
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-            body.classList.toggle('menu-open');
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
         });
 
-        // Close menu when a link is clicked (mobile)
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navLinks.classList.contains('active')) {
-                    hamburger.classList.remove('active');
-                    navLinks.classList.remove('active');
-                    body.classList.remove('menu-open');
-                }
-            });
-        });
-
-        // ──────────────────────────────────
-        // Custom Cursor
-        // ──────────────────────────────────
-        const cursorDot = document.getElementById('cursorDot');
-        const cursorOutline = document.getElementById('cursorOutline');
-        const hoverTargets = document.querySelectorAll('.hover-target, a, button, .magnetic-btn, .project-card, .service-card, .footer-card, .social-icon');
-
-        if (window.innerWidth > 768) {
-            window.addEventListener('mousemove', (e) => {
-                gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0.1 });
-                gsap.to(cursorOutline, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power2.out" });
-            });
-            hoverTargets.forEach(target => {
-                target.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-                target.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-            });
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
         }
+        requestAnimationFrame(raf);
 
-        // ──────────────────────────────────
-        // Magnetic Buttons
-        // ──────────────────────────────────
-        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+        // --- 2. CUSTOM CURSOR ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        document.querySelectorAll('a, button, .cursor-pointer').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorOutline.style.width = '60px';
+                cursorOutline.style.height = '60px';
+                cursorOutline.style.backgroundColor = 'rgba(10, 132, 255, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOutline.style.width = '40px';
+                cursorOutline.style.height = '40px';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // --- 3. MAGNETIC BUTTONS ---
+        document.querySelectorAll('.mag-btn').forEach(btn => {
             btn.addEventListener('mousemove', (e) => {
                 const rect = btn.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-                gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.4, ease: "power2.out" });
+                gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.3, ease: "power2.out" });
             });
             btn.addEventListener('mouseleave', () => {
                 gsap.to(btn, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
             });
         });
 
-        // ──────────────────────────────────
-        // Navbar Scroll Effect
-        // ──────────────────────────────────
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 80);
-        });
-
-        // ──────────────────────────────────
-        // Hero Text Stagger Animation
-        // ──────────────────────────────────
-        const heroTitle = document.getElementById('hero-title');
-        heroTitle.innerHTML = heroTitle.textContent.replace(/\S/g, "<span class='char'>$&</span>");
-        gsap.to('.char', {
-            y: 0,
-            stagger: 0.05,
-            delay: 0.5,
-            duration: 1.5,
-            ease: "power4.out"
-        });
-        gsap.from('.hero-sub', { opacity: 0, y: 20, duration: 1.5, delay: 1.5 });
-
-        // ──────────────────────────────────
-        // Three.js Digital Energy Field (Hero)
-        // ──────────────────────────────────
-        (function initHeroThree() {
-            const container = document.getElementById('webgl-container');
-            const scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x030303, 0.02);
-            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-            camera.position.set(0, 10, 50);
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
-
-            const particleCount = 6000;
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const colors = new Float32Array(particleCount * 3);
-            const color1 = new THREE.Color('#2F7FB3');
-            const color2 = new THREE.Color('#8A2BE2');
-            for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] = (Math.random() - 0.5) * 100;
-                positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
-                const mixed = color1.clone().lerp(color2, Math.random());
-                colors[i * 3] = mixed.r;
-                colors[i * 3 + 1] = mixed.g;
-                colors[i * 3 + 2] = mixed.b;
-            }
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            const material = new THREE.PointsMaterial({ size: 0.15, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
-            const particles = new THREE.Points(geometry, material);
-            scene.add(particles);
-
-            let mouse = new THREE.Vector2(0, 0);
-            let targetMouse = new THREE.Vector2(0, 0);
-            window.addEventListener('mousemove', (e) => {
-                targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-                targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            });
-
-            const clock = new THREE.Clock();
-            (function animate() {
-                requestAnimationFrame(animate);
-                const time = clock.getElapsedTime();
-                mouse.lerp(targetMouse, 0.05);
-                const pos = particles.geometry.attributes.position.array;
-                for (let i = 0; i < particleCount; i++) {
-                    const x = pos[i * 3],
-                        z = pos[i * 3 + 2];
-                    pos[i * 3 + 1] = Math.sin(x * 0.1 + time) * 2 + Math.cos(z * 0.1 + time) * 2;
-                }
-                particles.geometry.attributes.position.needsUpdate = true;
-                camera.position.x += (mouse.x * 10 - camera.position.x) * 0.05;
-                camera.position.y += (mouse.y * 5 + 10 - camera.position.y) * 0.05;
-                camera.lookAt(scene.position);
-                renderer.render(scene, camera);
-            })();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        })();
-
-        // ──────────────────────────────────
-        // About Three.js
-        // ──────────────────────────────────
-        const aboutCanvas = document.getElementById('about-canvas');
-        const aboutScene = new THREE.Scene();
-        const aboutCamera = new THREE.PerspectiveCamera(55, aboutCanvas.offsetWidth / aboutCanvas.offsetHeight, 0.1, 100);
-        const aboutRenderer = new THREE.WebGLRenderer({ canvas: aboutCanvas, alpha: true, antialias: true });
-        aboutRenderer.setSize(aboutCanvas.offsetWidth, aboutCanvas.offsetHeight);
-        aboutRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        const aboutGeo = new THREE.IcosahedronGeometry(7, 2);
-        const aboutMat = new THREE.MeshStandardMaterial({ color: 0x2F7FB3, wireframe: true, emissive: 0xF47C2A, emissiveIntensity: 0.2, roughness: 0.6, metalness: 0.2 });
-        const aboutMesh = new THREE.Mesh(aboutGeo, aboutMat);
-        aboutScene.add(aboutMesh);
-        const aboutLight = new THREE.PointLight(0xF47C2A, 2, 30);
-        aboutLight.position.set(8, 8, 10);
-        aboutScene.add(aboutLight);
-        aboutScene.add(new THREE.AmbientLight(0x334466, 0.5));
-        aboutCamera.position.z = 22;
-        (function animateAbout() {
-            requestAnimationFrame(animateAbout);
-            aboutMesh.rotation.x += 0.004;
-            aboutMesh.rotation.y += 0.006;
-            aboutMesh.rotation.z += 0.002;
-            aboutRenderer.render(aboutScene, aboutCamera);
-        })();
-
-        // ──────────────────────────────────
-        // Counter Animation
-        // ──────────────────────────────────
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const counter = entry.target;
-                    const target = parseInt(counter.getAttribute('data-target'));
-                    const duration = 2000;
-                    const increment = target / (duration / 16);
-                    let current = 0;
-                    (function update() {
-                        current += increment;
-                        if (current < target) {
-                            counter.textContent = Math.floor(current);
-                            requestAnimationFrame(update);
-                        } else {
-                            counter.textContent = target + '+';
-                        }
-                    })();
-                    counterObserver.unobserve(counter);
-                }
-            });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('.counter').forEach(c => counterObserver.observe(c));
-
-        // ──────────────────────────────────
-        // Portfolio 3D Tilt
-        // ──────────────────────────────────
-        document.querySelectorAll('.project-card').forEach(card => {
-            const glow = card.querySelector('.project-glow');
+        // --- 4. 3D TILT EFFECT FOR CARDS ---
+        document.querySelectorAll('.tilt-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 18;
-                const rotateY = (centerX - x) / 18;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-16px)`;
-                if (glow) {
-                    glow.style.left = x - 150 + 'px';
-                    glow.style.top = y - 150 + 'px';
-                    glow.style.opacity = '1';
-                }
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
             card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
-                if (glow) glow.style.opacity = '0';
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
             });
         });
 
-        // ──────────────────────────────────
-        // Testimonials Carousel
-        // ──────────────────────────────────
-        const testimonialCards = document.querySelectorAll('.testimonial-card');
-        const carouselDots = document.querySelectorAll('.carousel-dot');
-        let currentIndex = 0;
-        const totalCards = testimonialCards.length;
+        // --- 5. THREE.JS COMBINED SCENE (Earth + Morphing Particles) ---
+        const canvasContainer = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
 
-        function updateCarousel(newIndex) {
-            currentIndex = ((newIndex % totalCards) + totalCards) % totalCards;
-            testimonialCards.forEach((card, i) => {
-                card.className = 'testimonial-card';
-                const offset = (i - currentIndex + totalCards) % totalCards;
-                if (offset === 0) card.classList.add('active');
-                else if (offset === 1) card.classList.add('right');
-                else if (offset === totalCards - 1) card.classList.add('left');
-                else card.classList.add('hidden-card');
-            });
-            carouselDots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 30;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        canvasContainer.appendChild(renderer.domElement);
+
+        // --- Earth Group ---
+        const earthGroup = new THREE.Group();
+        scene.add(earthGroup);
+
+        const textureLoader = new THREE.TextureLoader();
+        const earthMap = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-dark.jpg');
+        const bumpMap = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-topology.png');
+
+        const earthGeometry = new THREE.SphereGeometry(6, 64, 64);
+        const earthMaterial = new THREE.MeshStandardMaterial({
+            map: earthMap,
+            bumpMap: bumpMap,
+            bumpScale: 0.05,
+            roughness: 0.7,
+            metalness: 0.1
+        });
+        const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+        earthGroup.add(earth);
+
+        const atmosGeometry = new THREE.SphereGeometry(6.2, 64, 64);
+        const atmosMaterial = new THREE.MeshPhongMaterial({
+            color: 0x0A84FF,
+            transparent: true,
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending,
+            side: THREE.BackSide,
+            depthWrite: false
+        });
+        const atmosphere = new THREE.Mesh(atmosGeometry, atmosMaterial);
+        earthGroup.add(atmosphere);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            const r = 6.5 + Math.random() * 2;
+            const theta = Math.random() * 2 * Math.PI;
+            const phi = Math.acos(2 * Math.random() - 1);
+            posArray[i] = r * Math.sin(phi) * Math.cos(theta);
+            posArray[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+            posArray[i + 2] = r * Math.cos(phi);
         }
-        carouselDots.forEach(dot => dot.addEventListener('click', () => updateCarousel(parseInt(dot.getAttribute('data-dot')))));
-        setInterval(() => updateCarousel(currentIndex + 1), 5000);
-        updateCarousel(0);
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0xFF9F0A,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+        const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        earthGroup.add(particleMesh);
 
-        // ──────────────────────────────────
-        // CTA Three.js
-        // ──────────────────────────────────
-        const ctaCanvas = document.getElementById('cta-canvas');
-        const ctaScene = new THREE.Scene();
-        const ctaCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
-        const ctaRenderer = new THREE.WebGLRenderer({ canvas: ctaCanvas, alpha: true, antialias: true });
-        ctaRenderer.setSize(window.innerWidth, window.innerHeight);
-        ctaRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        const swirlGeo = new THREE.BufferGeometry();
-        const swirlPos = new Float32Array(800 * 3);
-        for (let i = 0; i < 800; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const radius = 8 + Math.random() * 35;
-            swirlPos[i * 3] = Math.cos(angle) * radius;
-            swirlPos[i * 3 + 1] = (Math.random() - 0.5) * 40;
-            swirlPos[i * 3 + 2] = Math.sin(angle) * radius;
-        }
-        swirlGeo.setAttribute('position', new THREE.BufferAttribute(swirlPos, 3));
-        const swirlMat = new THREE.PointsMaterial({ color: 0xF47C2A, size: 0.3, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false });
-        const swirlSystem = new THREE.Points(swirlGeo, swirlMat);
-        ctaScene.add(swirlSystem);
-        const swirlGeo2 = new THREE.BufferGeometry();
-        const swirlPos2 = new Float32Array(400 * 3);
-        for (let i = 0; i < 400; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const radius = 3 + Math.random() * 20;
-            swirlPos2[i * 3] = Math.cos(angle) * radius;
-            swirlPos2[i * 3 + 1] = (Math.random() - 0.5) * 30;
-            swirlPos2[i * 3 + 2] = Math.sin(angle) * radius;
-        }
-        swirlGeo2.setAttribute('position', new THREE.BufferAttribute(swirlPos2, 3));
-        const swirlMat2 = new THREE.PointsMaterial({ color: 0x2F7FB3, size: 0.2, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false });
-        const swirlSystem2 = new THREE.Points(swirlGeo2, swirlMat2);
-        ctaScene.add(swirlSystem2);
-        ctaCamera.position.z = 45;
-        (function animateCTA() {
-            requestAnimationFrame(animateCTA);
-            swirlSystem.rotation.y += 0.002;
-            swirlSystem.rotation.x += 0.001;
-            swirlSystem2.rotation.y -= 0.003;
-            swirlSystem2.rotation.x -= 0.0015;
-            ctaRenderer.render(ctaScene, ctaCamera);
-        })();
+        // --- Morphing Particles (chaotic -> sphere) ---
+        const morphCount = 6000;
+        const morphPositions = new Float32Array(morphCount * 3);
+        const spherePositions = new Float32Array(morphCount * 3);
 
-        // ──────────────────────────────────
-        // Footer Orb
-        // ──────────────────────────────────
-        const footerOrb = document.getElementById('footerOrb');
-        const footerTrack = document.getElementById('footerTrack');
-        if (footerTrack && footerOrb && window.innerWidth > 768) {
-            footerTrack.addEventListener('mousemove', (e) => {
-                const rect = footerTrack.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                footerOrb.style.left = x - 200 + 'px';
-                footerOrb.style.top = y - 200 + 'px';
-                footerOrb.style.opacity = '0.7';
-            });
-            footerTrack.addEventListener('mouseleave', () => footerOrb.style.opacity = '0');
+        const morphGeometry = new THREE.BufferGeometry();
+
+        for (let i = 0; i < morphCount; i++) {
+            // Chaotic initial state
+            morphPositions[i * 3] = (Math.random() - 0.5) * 40;
+            morphPositions[i * 3 + 1] = (Math.random() - 0.5) * 40;
+            morphPositions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+
+            // Sphere target state (radius 12)
+            const r = 12;
+            const phi = Math.acos(-1 + (2 * i) / morphCount);
+            const theta = Math.sqrt(morphCount * Math.PI) * phi;
+            spherePositions[i * 3] = r * Math.cos(theta) * Math.sin(phi);
+            spherePositions[i * 3 + 1] = r * Math.sin(theta) * Math.sin(phi);
+            spherePositions[i * 3 + 2] = r * Math.cos(phi);
         }
 
-        // ──────────────────────────────────
-        // Scroll Fade-in
-        // ──────────────────────────────────
-        const fadeObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
-
-        // ──────────────────────────────────
-        // Smooth Anchor Links
-        // ──────────────────────────────────
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
+        morphGeometry.setAttribute('position', new THREE.BufferAttribute(morphPositions, 3));
+        const morphMaterial = new THREE.PointsMaterial({
+            size: 0.08,
+            color: 0x0A84FF,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
         });
 
+        const morphPoints = new THREE.Points(morphGeometry, morphMaterial);
+        scene.add(morphPoints);
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(15, 10, 15);
+        scene.add(directionalLight);
+        const blueLight = new THREE.PointLight(0x0A84FF, 2, 50);
+        blueLight.position.set(-10, -5, 10);
+        scene.add(blueLight);
+
+        // --- 6. GSAP ANIMATIONS ---
+
+        // Morphing Particle Scroll (Hero Section)
+        let scrollObj = { progress: 0 };
+        gsap.to(scrollObj, {
+            progress: 1,
+            scrollTrigger: {
+                trigger: "#hero-trigger",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            onUpdate: () => {
+                const pos = morphGeometry.attributes.position.array;
+
+                // Lock minimum progress so it NEVER goes back to chaos
+                const progress = scrollObj.progress;
+
+                for (let i = 0; i < morphCount * 3; i++) {
+                    pos[i] = THREE.MathUtils.lerp(
+                        morphPositions[i],
+                        spherePositions[i],
+                        progress
+                    );
+                }
+
+                morphGeometry.attributes.position.needsUpdate = true;
+
+                // Enhanced zoom-in (camera moves closer)
+                camera.position.z = 30 - (scrollObj.progress * 18);
+                // Rotation & Color Shift during morph
+                morphPoints.rotation.y = scrollObj.progress * Math.PI;
+                morphMaterial.color.setHSL(0.6 + (scrollObj.progress * 0.4), 1, 0.5);
+            }
+        });
+
+        // Hero Text Cinematic Reveal
+        const heroTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#hero-trigger",
+                start: "top top",
+                end: "bottom center",
+                scrub: true
+            }
+        });
+        heroTl.from(".hero-title", { scale: 1.5, filter: "blur(20px)", opacity: 0, duration: 1 });
+        heroTl.from(".hero-desc", { y: 20, opacity: 0, duration: 0.6 }, 0);
+        heroTl.from(".hero-btns", { y: 30, opacity: 0, duration: 0.6 }, 0);
+        heroTl.to(".hero-text", { opacity: 0, y: -80, duration: 1 }, 1.5);
+
+        // Reveal Text Scrub (About Section)
+        gsap.to(".reveal-text", {
+            backgroundSize: "100% 100%",
+            scrollTrigger: {
+                trigger: ".reveal-text",
+                start: "top 80%",
+                end: "top 20%",
+                scrub: true
+            }
+        });
+
+        // --- EARTH ANIMATION: Move right on About section ---
+        gsap.to(earthGroup.position, {
+            x: 5,
+            scrollTrigger: {
+                trigger: "#about",
+                start: "top 70%",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
+        // --- EARTH ANIMATION: Move down during Work (Portfolio) section ---
+        gsap.to(earthGroup.position, {
+            y: -6,
+            scrollTrigger: {
+                trigger: "#work",
+                start: "top center",
+                end: "bottom center",
+                scrub: 1
+            }
+        });
+
+        // --- Horizontal Scroll for Work Section ---
+        const horizontalWrapper = document.querySelector(".horizontal-scroll-wrapper");
+        const cards = gsap.utils.toArray(".work-card");
+        gsap.to(cards, {
+            xPercent: -100 * (cards.length - 1),
+            ease: "none",
+            scrollTrigger: {
+                trigger: "#work",
+                pin: true,
+                scrub: 1,
+                start: "top top",
+                end: () => "+=" + (horizontalWrapper.scrollWidth - window.innerWidth),
+            }
+        });
+
+        // --- RENDER LOOP ---
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            earth.rotation.y += 0.001;
+            atmosphere.rotation.y += 0.001;
+            particleMesh.rotation.y -= 0.0005;
+            particleMesh.rotation.z = Math.sin(elapsedTime * 0.1) * 0.1;
+            morphPoints.rotation.x += 0.0005;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- Responsive Handling ---
         window.addEventListener('resize', () => {
-            aboutCamera.aspect = aboutCanvas.offsetWidth / aboutCanvas.offsetHeight;
-            aboutCamera.updateProjectionMatrix();
-            aboutRenderer.setSize(aboutCanvas.offsetWidth, aboutCanvas.offsetHeight);
-            ctaCamera.aspect = window.innerWidth / window.innerHeight;
-            ctaCamera.updateProjectionMatrix();
-            ctaRenderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            ScrollTrigger.refresh();
         });
     </script>
 </body>
