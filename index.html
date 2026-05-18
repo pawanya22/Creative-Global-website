@@ -187,12 +187,542 @@
             transform: translateZ(30px);
         }
 
-        ::-webkit-scrollbar {
-            display: none;
+        /* Hide scrollbar for entire website */
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* CHATBOT SEPARATE SCROLLBAR */
+#chatbot-messages {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(10, 132, 255, 0.5) transparent;
+}
+
+#chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chatbot-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#chatbot-messages::-webkit-scrollbar-thumb {
+    background: rgba(10, 132, 255, 0.5);
+    border-radius: 999px;
+}
+
+#chatbot-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(10, 132, 255, 0.8);
+}
+
+        /* ===== PREMIUM AI CHATBOT STYLES ===== */
+        
+        /* Chatbot Button - Floating with magnetic effect */
+        #chatbot-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9998;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 
+                0 0 30px rgba(10, 132, 255, 0.3),
+                0 0 60px rgba(255, 159, 10, 0.2),
+                inset 0 0 20px rgba(10, 132, 255, 0.1);
+            animation: pulse-glow 3s ease-in-out infinite;
         }
-        * {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 
+                    0 0 30px rgba(10, 132, 255, 0.3),
+                    0 0 60px rgba(255, 159, 10, 0.2),
+                    inset 0 0 20px rgba(10, 132, 255, 0.1);
+            }
+            50% {
+                box-shadow: 
+                    0 0 40px rgba(10, 132, 255, 0.5),
+                    0 0 80px rgba(255, 159, 10, 0.3),
+                    inset 0 0 30px rgba(10, 132, 255, 0.2);
+            }
+        }
+
+        #chatbot-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 
+                0 0 50px rgba(10, 132, 255, 0.6),
+                0 0 100px rgba(255, 159, 10, 0.4),
+                inset 0 0 30px rgba(10, 132, 255, 0.2);
+            border-color: rgba(10, 132, 255, 0.6);
+        }
+
+        #chatbot-btn svg {
+            width: 32px;
+            height: 32px;
+            color: #0A84FF;
+            filter: drop-shadow(0 0 10px rgba(10, 132, 255, 0.8));
+            transition: all 0.3s ease;
+        }
+
+        #chatbot-btn:hover svg {
+            transform: rotate(20deg) scale(1.1);
+            color: #FF9F0A;
+            filter: drop-shadow(0 0 15px rgba(255, 159, 10, 0.9));
+        }
+
+        /* Notification badge */
+        #chatbot-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #FF9F0A, #FF6B35);
+            border-radius: 50%;
+            border: 2px solid rgba(10, 10, 15, 0.9);
+            animation: badge-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badge-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        /* Chatbot Panel */
+        #chatbot-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            width: 420px;
+            height: 500px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            border-radius: 24px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(10, 132, 255, 0.2),
+                inset 0 0 40px rgba(10, 132, 255, 0.05);
+            z-index: 9997;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+        }
+
+        @media (max-width: 768px) {
+            #chatbot-panel {
+                width: calc(100vw - 20px);
+                height: calc(100vh - 100px);
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                margin: 0 auto;
+            }
+            #chatbot-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+            }
+            #chatbot-btn svg {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        /* Chatbot Header */
+        #chatbot-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(10, 132, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.1), rgba(255, 159, 10, 0.05));
+        }
+
+        #chatbot-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #chatbot-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0A84FF, #FF9F0A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.5);
+        }
+
+        #chatbot-avatar svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        #chatbot-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        #chatbot-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00FF88;
+            animation: status-blink 2s ease-in-out infinite;
+        }
+
+        @keyframes status-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        #chatbot-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #chatbot-close:hover {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: rgba(255, 59, 48, 0.4);
+            transform: rotate(90deg);
+        }
+
+        #chatbot-close svg {
+            width: 20px;
+            height: 20px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Chat Messages Area */
+        #chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        #chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chatbot-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        #chatbot-messages::-webkit-scrollbar-thumb {
+            background: rgba(10, 132, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        #chatbot-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(10, 132, 255, 0.5);
+        }
+
+        /* Message Bubbles */
+        .chat-message {
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            animation: messageSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .message-avatar.ai {
+            background: linear-gradient(135deg, #0A84FF, #FF9F0A);
+            box-shadow: 0 0 15px rgba(10, 132, 255, 0.4);
+        }
+
+        .message-avatar.user {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message-avatar svg {
+            width: 18px;
+            height: 18px;
+            color: white;
+        }
+
+        .message-content {
+            max-width: 75%;
+            background: rgba(10, 132, 255, 0.1);
+            border: 1px solid rgba(10, 132, 255, 0.2);
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            word-wrap: break-word;
+        }
+
+        .chat-message.user .message-content {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.3), rgba(255, 159, 10, 0.2));
+            border-color: rgba(10, 132, 255, 0.4);
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-message.ai .message-content {
+            border-radius: 18px 18px 18px 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 6px;
+            padding: 0 4px;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 6px;
+            padding: 14px 18px;
+            background: rgba(10, 132, 255, 0.1);
+            border: 1px solid rgba(10, 132, 255, 0.2);
+            border-radius: 18px 18px 18px 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0A84FF;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        /* Quick Questions */
+        #quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 24px 16px;
+        }
+
+        .quick-question-btn {
+            padding: 10px 16px;
+            background: rgba(10, 132, 255, 0.08);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            border-radius: 20px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .quick-question-btn:hover {
+            background: rgba(10, 132, 255, 0.2);
+            border-color: rgba(10, 132, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+        }
+
+        /* Chat Input Area */
+        #chatbot-input-area {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(10, 132, 255, 0.2);
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.8), transparent);
+        }
+
+        #chatbot-input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        #chatbot-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            border-radius: 16px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            max-height: 120px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        #chatbot-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(10, 132, 255, 0.6);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.2);
+        }
+
+        #chatbot-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        #chatbot-send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0A84FF, #FF9F0A);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(10, 132, 255, 0.4);
+        }
+
+        #chatbot-send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(10, 132, 255, 0.6);
+        }
+
+        #chatbot-send-btn:active {
+            transform: scale(0.95);
+        }
+
+        #chatbot-send-btn svg {
+            width: 22px;
+            height: 22px;
+            color: white;
+        }
+
+        #chatbot-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Welcome Message Special Styling */
+        .welcome-message {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.15), rgba(255, 159, 10, 0.1));
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-message h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #0A84FF, #FF9F0A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-message p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Mobile cursor override */
+        @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+            .cursor-dot,
+            .cursor-outline {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -515,6 +1045,78 @@ works.forEach((work, i) => {
 
             <p class="mt-20 text-center text-[10px] uppercase tracking-[0.4em] opacity-30">© 2026 Creative Global. All rights reserved.</p>
         </footer>
+    </div>
+
+    <!-- ===== PREMIUM AI CHATBOT SYSTEM ===== -->
+    
+    <!-- Chatbot Floating Button -->
+    <div id="chatbot-btn">
+        <div id="chatbot-badge"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </div>
+
+    <!-- Chatbot Panel -->
+    <div id="chatbot-panel">
+        <!-- Header -->
+        <div id="chatbot-header">
+            <div id="chatbot-header-left">
+                <div id="chatbot-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 8V4H8"/>
+                        <rect width="16" height="12" x="4" y="8" rx="2"/>
+                        <path d="M2 14h2"/>
+                        <path d="M20 14h2"/>
+                        <path d="M15 13v2"/>
+                        <path d="M9 13v2"/>
+                    </svg>
+                </div>
+                <div>
+                    <div id="chatbot-title">Creative Global AI</div>
+                    <div id="chatbot-status">
+                        <span class="status-dot"></span>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+            <div id="chatbot-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chatbot-messages">
+            <!-- Messages will be dynamically added here -->
+        </div>
+
+        <!-- Quick Questions -->
+        <div id="quick-questions">
+            <button class="quick-question-btn" data-question="What services do you provide?">🎯 Services</button>
+            <button class="quick-question-btn" data-question="How can I start a project?">🚀 Start Project</button>
+            <button class="quick-question-btn" data-question="Tell me about your AI solutions">🤖 AI Solutions</button>
+            <button class="quick-question-btn" data-question="Do you build eCommerce websites?">🛒 eCommerce</button>
+        </div>
+
+        <!-- Input Area -->
+        <div id="chatbot-input-area">
+            <div id="chatbot-input-container">
+                <textarea 
+                    id="chatbot-input" 
+                    placeholder="Ask me anything about Creative Global..."
+                    rows="1"
+                ></textarea>
+                <button id="chatbot-send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -857,7 +1459,434 @@ gsap.to(".hero-glow", {
             ScrollTrigger.refresh();
         });
     </script>
+    <!-- ===== PREMIUM AI CHATBOT JAVASCRIPT ===== -->
     <script>
+        // ========================================
+        // CREATIVE GLOBAL AI CHATBOT SYSTEM
+        // Premium AI Assistant with Gemini API
+        // ========================================
+
+        const ChatbotSystem = {
+            // Configuration
+            config: {
+                // REPLACE WITH YOUR GEMINI API KEY (Get free at: https://makersuite.google.com/app/apikey)
+                geminiApiKey: 'YOUR_GEMINI_API_KEY_HERE',
+                useGeminiAPI: false, // Set to true when you add your API key
+                storageKey: 'creativeglobal_chat_history',
+                maxHistoryLength: 50,
+                typingDelay: 1000,
+                companyName: 'Creative Global',
+                companyInfo: {
+                    services: [
+                        'Web Development - Custom websites and web applications',
+                        'UI/UX Design - Beautiful, intuitive interfaces',
+                        'Branding - Strategic brand identities and visual systems',
+                        'AI Solutions - Intelligent systems and automation',
+                        '3D & Motion Design - Immersive experiences and animations',
+                        'Performance Engineering - Lightning-fast optimized experiences'
+                    ],
+                    description: 'Creative Global is a digital agency specializing in AI-powered experiences, immersive 3D worlds, and performance-tuned web platforms.',
+                    contact: 'hello@creativeglobal.com',
+                    portfolio: ['Nexus AI Platform', 'Stellar Commerce', 'Quantum Brand', 'Pulse Studio']
+                }
+            },
+
+            // DOM Elements
+            elements: {
+                btn: document.getElementById('chatbot-btn'),
+                badge: document.getElementById('chatbot-badge'),
+                panel: document.getElementById('chatbot-panel'),
+                closeBtn: document.getElementById('chatbot-close'),
+                messages: document.getElementById('chatbot-messages'),
+                input: document.getElementById('chatbot-input'),
+                sendBtn: document.getElementById('chatbot-send-btn'),
+                quickQuestions: document.querySelectorAll('.quick-question-btn')
+            },
+
+            // State
+            state: {
+                isOpen: false,
+                chatHistory: [],
+                isTyping: false
+            },
+
+            // Initialize chatbot
+            init() {
+                this.loadChatHistory();
+                this.bindEvents();
+                this.showWelcomeMessage();
+                console.log('🤖 Creative Global AI Chatbot initialized');
+            },
+
+            // Bind all events
+            bindEvents() {
+                // Toggle chatbot
+                this.elements.btn.addEventListener('click', () => this.toggleChatbot());
+                this.elements.closeBtn.addEventListener('click', () => this.toggleChatbot());
+
+                // Send message
+                this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
+                this.elements.input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Auto-resize textarea
+                this.elements.input.addEventListener('input', (e) => {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                });
+
+                // Quick questions
+                this.elements.quickQuestions.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const question = btn.getAttribute('data-question');
+                        this.elements.input.value = question;
+                        this.sendMessage();
+                    });
+                });
+            },
+
+            // Toggle chatbot panel
+            toggleChatbot() {
+                this.state.isOpen = !this.state.isOpen;
+                
+                if (this.state.isOpen) {
+                    this.elements.panel.style.display = 'flex';
+                    gsap.fromTo(this.elements.panel, 
+                        { scale: 0.8, opacity: 0, y: 30 },
+                        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
+                    );
+                    this.elements.badge.style.display = 'none';
+                    this.elements.input.focus();
+                } else {
+                    gsap.to(this.elements.panel, {
+                        scale: 0.8,
+                        opacity: 0,
+                        y: 30,
+                        duration: 0.3,
+                        ease: 'power2.in',
+                        onComplete: () => {
+                            this.elements.panel.style.display = 'none';
+                        }
+                    });
+                }
+            },
+
+            // Show welcome message
+            showWelcomeMessage() {
+                const welcomeHtml = `
+                    <div class="welcome-message">
+                        <h3>👋 Welcome to Creative Global</h3>
+                        <p>I'm your AI assistant, here to help you learn about our services, start a project, or answer any questions about web development, design, branding, and AI solutions.</p>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    this.addMessage(welcomeHtml, 'ai', false);
+                }, 500);
+            },
+
+            // Send user message
+            async sendMessage() {
+                const message = this.elements.input.value.trim();
+                if (!message || this.state.isTyping) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                this.elements.input.value = '';
+                this.elements.input.style.height = 'auto';
+
+                // Show typing indicator
+                this.showTypingIndicator();
+
+                // Get AI response
+                try {
+                    const response = await this.getAIResponse(message);
+                    this.hideTypingIndicator();
+                    this.addMessage(response, 'ai');
+                } catch (error) {
+                    console.error('Chatbot error:', error);
+                    this.hideTypingIndicator();
+                    this.addMessage('I apologize, but I encountered an error. Please try again or contact us directly at hello@creativeglobal.com', 'ai');
+                }
+            },
+
+            // Get AI response (Gemini API or Fallback)
+            async getAIResponse(userMessage) {
+                // Use Gemini API if configured
+                if (this.config.useGeminiAPI && this.config.geminiApiKey !== 'YOUR_GEMINI_API_KEY_HERE') {
+                    try {
+                        return await this.getGeminiResponse(userMessage);
+                    } catch (error) {
+                        console.error('Gemini API error:', error);
+                        // Fallback to predefined responses
+                        return this.getFallbackResponse(userMessage);
+                    }
+                } else {
+                    // Use intelligent predefined responses
+                    return this.getFallbackResponse(userMessage);
+                }
+            },
+
+            // Gemini API integration
+            async getGeminiResponse(userMessage) {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.config.geminiApiKey}`;
+                
+                const systemPrompt = `You are a professional AI assistant for ${this.config.companyName}, a premium digital agency. 
+                
+Company Information:
+- Services: ${this.config.companyInfo.services.join(', ')}
+- Description: ${this.config.companyInfo.description}
+- Contact: ${this.config.companyInfo.contact}
+- Portfolio: ${this.config.companyInfo.portfolio.join(', ')}
+
+Instructions:
+- Be professional, friendly, and helpful
+- Focus only on Creative Global services and business topics
+- Keep responses concise (2-4 sentences)
+- Provide actionable information
+- If asked about unrelated topics, politely redirect to Creative Global services
+- Use emojis sparingly for a premium feel
+- Never mention you're an AI or have limitations
+- Act as a knowledgeable business representative`;
+
+                const requestBody = {
+                    contents: [{
+                        parts: [{
+                            text: `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 200,
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gemini API request failed');
+                }
+
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text.trim();
+            },
+
+            // Intelligent fallback responses
+            getFallbackResponse(userMessage) {
+                const msg = userMessage.toLowerCase();
+
+                // Services
+                if (msg.includes('service') || msg.includes('what do you do') || msg.includes('what can you do')) {
+                    return `We specialize in 6 core areas: 🎨 **Web Development**, 🖌️ **UI/UX Design**, ✨ **Branding**, 🤖 **AI Solutions**, 🎬 **3D & Motion Design**, and ⚡ **Performance Engineering**. Which area interests you most?`;
+                }
+
+                // Pricing
+                if (msg.includes('price') || msg.includes('cost') || msg.includes('pricing') || msg.includes('how much')) {
+                    return `Our pricing varies based on project scope and requirements. Most web projects start around $5,000-$15,000, while comprehensive brand identities range from $10,000-$30,000. Let's discuss your specific needs! Contact us at ${this.config.companyInfo.contact} 📧`;
+                }
+
+                // Start project
+                if (msg.includes('start') || msg.includes('begin') || msg.includes('hire') || msg.includes('work with')) {
+                    return `Excellent! Here's how to start: 1️⃣ Email us at ${this.config.companyInfo.contact} with your project idea, 2️⃣ We'll schedule a discovery call, 3️⃣ Receive a tailored proposal within 48 hours. Ready to build something amazing? 🚀`;
+                }
+
+                // AI Solutions
+                if (msg.includes('ai solution') || msg.includes('artificial intelligence') || msg.includes('machine learning') || msg.includes('automation')) {
+                    return `Our AI Solutions include intelligent automation, chatbots like this one, recommendation engines, data analytics, and custom ML models. We help businesses leverage AI to streamline operations and unlock new possibilities. Want to explore AI for your business? 🤖✨`;
+                }
+
+                // eCommerce
+                if (msg.includes('ecommerce') || msg.includes('e-commerce') || msg.includes('online store') || msg.includes('shop')) {
+                    return `Absolutely! We build high-performance eCommerce platforms with features like 3D product visualization, AI recommendations, seamless checkout, inventory management, and blazing-fast performance. Recent work includes Stellar Commerce with immersive product experiences. 🛒💳`;
+                }
+
+                // 3D / Design
+                if (msg.includes('3d') || msg.includes('three') || msg.includes('motion') || msg.includes('animation')) {
+                    return `We create stunning 3D experiences using Three.js, WebGL, and motion design. From immersive product showcases to interactive brand worlds, we bring digital experiences to life with cinematic quality. Check out our work like Pulse Studio! 🎬✨`;
+                }
+
+                // Branding
+                if (msg.includes('brand') || msg.includes('logo') || msg.includes('identity')) {
+                    return `Our branding services cover complete visual identities: logos, color systems, typography, brand guidelines, and motion assets. We build brands that tell compelling stories and create lasting connections. See our Quantum Brand project! 🎨🔥`;
+                }
+
+                // Portfolio / Work
+                if (msg.includes('portfolio') || msg.includes('work') || msg.includes('project') || msg.includes('example')) {
+                    return `Check out our featured work: **Nexus AI Platform** (AI analytics), **Stellar Commerce** (3D eCommerce), **Quantum Brand** (Brand identity), and **Pulse Studio** (Interactive 3D portfolio). Scroll up to the Work section to see more! 🎯`;
+                }
+
+                // Contact
+                if (msg.includes('contact') || msg.includes('email') || msg.includes('phone') || msg.includes('reach')) {
+                    return `📧 **Email:** ${this.config.companyInfo.contact}\n🌐 **Website:** You're already here!\n💬 **Chat:** You're talking to me right now!\n\nFeel free to reach out anytime. We typically respond within 24 hours! ⚡`;
+                }
+
+                // Timeline
+                if (msg.includes('how long') || msg.includes('timeline') || msg.includes('duration') || msg.includes('time frame')) {
+                    return `Project timelines vary: Small websites take 2-4 weeks, full web applications 6-12 weeks, and comprehensive brand systems 4-8 weeks. Rush projects available with premium rates. Let's discuss your deadline! ⏱️`;
+                }
+
+                // Technology
+                if (msg.includes('technology') || msg.includes('tech stack') || msg.includes('tools') || msg.includes('framework')) {
+                    return `We work with cutting-edge tech: React, Next.js, Three.js, GSAP, Tailwind CSS, Node.js, Python, TensorFlow for AI, and more. We choose the best tools for each project's unique needs. Performance and scalability are always priorities! 💻⚡`;
+                }
+
+                // Web development
+                if (msg.includes('web dev') || msg.includes('website') || msg.includes('web app') || msg.includes('build')) {
+                    return `We build custom, high-performance websites and web applications from scratch. Specialties include immersive 3D experiences, smooth animations, blazing-fast load times, and mobile-first responsive design. What kind of website do you need? 🌐✨`;
+                }
+
+                // UI/UX
+                if (msg.includes('ui') || msg.includes('ux') || msg.includes('design') || msg.includes('interface')) {
+                    return `Our UI/UX design creates beautiful, intuitive interfaces users love. We focus on user research, wireframing, prototyping, visual design, and usability testing. Every pixel serves a purpose. Want to see our design process? 🎨📱`;
+                }
+
+                // Consultation
+                if (msg.includes('consult') || msg.includes('meeting') || msg.includes('call') || msg.includes('discuss')) {
+                    return `We offer free 30-minute consultation calls to discuss your project! Email us at ${this.config.companyInfo.contact} with some details about what you're building, and we'll schedule a time that works for you. Looking forward to it! 📞✨`;
+                }
+
+                // Greeting
+                if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey') || msg === 'yo') {
+                    return `Hey there! 👋 I'm the Creative Global AI assistant. I can help you learn about our services, start a project, or answer questions about web development, design, branding, and AI solutions. What can I help you with today?`;
+                }
+
+                // Thanks
+                if (msg.includes('thank') || msg.includes('thanks')) {
+                    return `You're very welcome! 😊 Feel free to ask me anything else about Creative Global, or reach out directly at ${this.config.companyInfo.contact}. We're excited to work with you! ✨`;
+                }
+
+                // Goodbye
+                if (msg.includes('bye') || msg.includes('goodbye') || msg.includes('see you')) {
+                    return `Thanks for chatting! 👋 Feel free to come back anytime you have questions. Looking forward to working with you on your next project! 🚀`;
+                }
+
+                // Default - redirect to services
+                return `Great question! I'm here to help with information about Creative Global's services, projects, pricing, and how we can work together. Try asking about our **Web Development**, **UI/UX Design**, **Branding**, **AI Solutions**, or **3D & Motion** services! What would you like to know? 🎯`;
+            },
+
+            // Show typing indicator
+            showTypingIndicator() {
+                this.state.isTyping = true;
+                const typingHtml = `
+                    <div class="chat-message ai typing-indicator">
+                        <div class="message-avatar ai">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 8V4H8"/>
+                                <rect width="16" height="12" x="4" y="8" rx="2"/>
+                                <path d="M2 14h2"/>
+                                <path d="M20 14h2"/>
+                                <path d="M15 13v2"/>
+                                <path d="M9 13v2"/>
+                            </svg>
+                        </div>
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                `;
+                this.elements.messages.insertAdjacentHTML('beforeend', typingHtml);
+                this.scrollToBottom();
+            },
+
+            // Hide typing indicator
+            hideTypingIndicator() {
+                this.state.isTyping = false;
+                const typingIndicator = this.elements.messages.querySelector('.typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            },
+
+            // Add message to chat
+            addMessage(content, sender = 'ai', saveToHistory = true) {
+                const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                const messageHtml = `
+                    <div class="chat-message ${sender}">
+                        <div class="message-avatar ${sender}">
+                            ${sender === 'ai' ? `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 8V4H8"/>
+                                    <rect width="16" height="12" x="4" y="8" rx="2"/>
+                                    <path d="M2 14h2"/>
+                                    <path d="M20 14h2"/>
+                                    <path d="M15 13v2"/>
+                                    <path d="M9 13v2"/>
+                                </svg>
+                            ` : `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            `}
+                        </div>
+                        <div>
+                            <div class="message-content">${content}</div>
+                            <div class="message-time">${time}</div>
+                        </div>
+                    </div>
+                `;
+
+                this.elements.messages.insertAdjacentHTML('beforeend', messageHtml);
+                this.scrollToBottom();
+
+                // Save to history
+                if (saveToHistory) {
+                    this.state.chatHistory.push({ content, sender, time });
+                    this.saveChatHistory();
+                }
+            },
+
+            // Scroll to bottom
+            scrollToBottom() {
+                setTimeout(() => {
+                    this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+                }, 100);
+            },
+
+            // Save chat history to localStorage
+            saveChatHistory() {
+                try {
+                    const historyToSave = this.state.chatHistory.slice(-this.config.maxHistoryLength);
+                    localStorage.setItem(this.config.storageKey, JSON.stringify(historyToSave));
+                } catch (error) {
+                    console.error('Failed to save chat history:', error);
+                }
+            },
+
+            // Load chat history from localStorage
+            loadChatHistory() {
+                try {
+                    const saved = localStorage.getItem(this.config.storageKey);
+                    if (saved) {
+                        this.state.chatHistory = JSON.parse(saved);
+                        // Optionally restore messages to UI
+                        // this.state.chatHistory.forEach(msg => this.addMessage(msg.content, msg.sender, false));
+                    }
+                } catch (error) {
+                    console.error('Failed to load chat history:', error);
+                }
+            }
+        };
+
+        // Initialize chatbot when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            ChatbotSystem.init();
+        });
+
+        // Initialize Lucide icons
         lucide.createIcons();
     </script>
 </body>
