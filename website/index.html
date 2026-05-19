@@ -1093,14 +1093,6 @@ works.forEach((work, i) => {
             <!-- Messages will be dynamically added here -->
         </div>
 
-        <!-- Quick Questions -->
-        <div id="quick-questions">
-            <button class="quick-question-btn" data-question="What services do you provide?">🎯 Services</button>
-            <button class="quick-question-btn" data-question="How can I start a project?">🚀 Start Project</button>
-            <button class="quick-question-btn" data-question="Tell me about your AI solutions">🤖 AI Solutions</button>
-            <button class="quick-question-btn" data-question="Do you build eCommerce websites?">🛒 eCommerce</button>
-        </div>
-
         <!-- Input Area -->
         <div id="chatbot-input-area">
             <div id="chatbot-input-container">
@@ -1461,433 +1453,59 @@ gsap.to(".hero-glow", {
     </script>
     <!-- ===== PREMIUM AI CHATBOT JAVASCRIPT ===== -->
     <script>
-        // ========================================
-        // CREATIVE GLOBAL AI CHATBOT SYSTEM
-        // Premium AI Assistant with Gemini API
-        // ========================================
+    // 1. Open/Close Logic
+    document.getElementById('chatbot-btn').addEventListener('click', () => {
+        const panel = document.getElementById('chatbot-panel');
+        panel.style.display = (panel.style.display === 'flex') ? 'none' : 'flex';
+    });
 
-        const ChatbotSystem = {
-            // Configuration
-            config: {
-                // REPLACE WITH YOUR GEMINI API KEY (Get free at: https://makersuite.google.com/app/apikey)
-                geminiApiKey: 'YOUR_GEMINI_API_KEY_HERE',
-                useGeminiAPI: false, // Set to true when you add your API key
-                storageKey: 'creativeglobal_chat_history',
-                maxHistoryLength: 50,
-                typingDelay: 1000,
-                companyName: 'Creative Global',
-                companyInfo: {
-                    services: [
-                        'Web Development - Custom websites and web applications',
-                        'UI/UX Design - Beautiful, intuitive interfaces',
-                        'Branding - Strategic brand identities and visual systems',
-                        'AI Solutions - Intelligent systems and automation',
-                        '3D & Motion Design - Immersive experiences and animations',
-                        'Performance Engineering - Lightning-fast optimized experiences'
-                    ],
-                    description: 'Creative Global is a digital agency specializing in AI-powered experiences, immersive 3D worlds, and performance-tuned web platforms.',
-                    contact: 'hello@creativeglobal.com',
-                    portfolio: ['Nexus AI Platform', 'Stellar Commerce', 'Quantum Brand', 'Pulse Studio']
-                }
-            },
+    document.getElementById('chatbot-close').addEventListener('click', () => {
+        document.getElementById('chatbot-panel').style.display = 'none';
+    });
 
-            // DOM Elements
-            elements: {
-                btn: document.getElementById('chatbot-btn'),
-                badge: document.getElementById('chatbot-badge'),
-                panel: document.getElementById('chatbot-panel'),
-                closeBtn: document.getElementById('chatbot-close'),
-                messages: document.getElementById('chatbot-messages'),
-                input: document.getElementById('chatbot-input'),
-                sendBtn: document.getElementById('chatbot-send-btn'),
-                quickQuestions: document.querySelectorAll('.quick-question-btn')
-            },
+    // 2. Chat Logic
+    const ChatbotSystem = {
+        async sendMessage() {
+            const input = document.getElementById('chatbot-input');
+            const text = input.value.trim();
+            if (!text) return;
 
-            // State
-            state: {
-                isOpen: false,
-                chatHistory: [],
-                isTyping: false
-            },
-
-            // Initialize chatbot
-            init() {
-                this.loadChatHistory();
-                this.bindEvents();
-                this.showWelcomeMessage();
-                console.log('🤖 Creative Global AI Chatbot initialized');
-            },
-
-            // Bind all events
-            bindEvents() {
-                // Toggle chatbot
-                this.elements.btn.addEventListener('click', () => this.toggleChatbot());
-                this.elements.closeBtn.addEventListener('click', () => this.toggleChatbot());
-
-                // Send message
-                this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
-                this.elements.input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendMessage();
-                    }
-                });
-
-                // Auto-resize textarea
-                this.elements.input.addEventListener('input', (e) => {
-                    e.target.style.height = 'auto';
-                    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-                });
-
-                // Quick questions
-                this.elements.quickQuestions.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const question = btn.getAttribute('data-question');
-                        this.elements.input.value = question;
-                        this.sendMessage();
-                    });
-                });
-            },
-
-            // Toggle chatbot panel
-            toggleChatbot() {
-                this.state.isOpen = !this.state.isOpen;
-                
-                if (this.state.isOpen) {
-                    this.elements.panel.style.display = 'flex';
-                    gsap.fromTo(this.elements.panel, 
-                        { scale: 0.8, opacity: 0, y: 30 },
-                        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
-                    );
-                    this.elements.badge.style.display = 'none';
-                    this.elements.input.focus();
-                } else {
-                    gsap.to(this.elements.panel, {
-                        scale: 0.8,
-                        opacity: 0,
-                        y: 30,
-                        duration: 0.3,
-                        ease: 'power2.in',
-                        onComplete: () => {
-                            this.elements.panel.style.display = 'none';
-                        }
-                    });
-                }
-            },
-
-            // Show welcome message
-            showWelcomeMessage() {
-                const welcomeHtml = `
-                    <div class="welcome-message">
-                        <h3>👋 Welcome to Creative Global</h3>
-                        <p>I'm your AI assistant, here to help you learn about our services, start a project, or answer any questions about web development, design, branding, and AI solutions.</p>
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    this.addMessage(welcomeHtml, 'ai', false);
-                }, 500);
-            },
-
-            // Send user message
-            async sendMessage() {
-                const message = this.elements.input.value.trim();
-                if (!message || this.state.isTyping) return;
-
-                // Add user message
-                this.addMessage(message, 'user');
-                this.elements.input.value = '';
-                this.elements.input.style.height = 'auto';
-
-                // Show typing indicator
-                this.showTypingIndicator();
-
-                // Get AI response
-                try {
-                    const response = await this.getAIResponse(message);
-                    this.hideTypingIndicator();
-                    this.addMessage(response, 'ai');
-                } catch (error) {
-                    console.error('Chatbot error:', error);
-                    this.hideTypingIndicator();
-                    this.addMessage('I apologize, but I encountered an error. Please try again or contact us directly at hello@creativeglobal.com', 'ai');
-                }
-            },
-
-            // Get AI response (Gemini API or Fallback)
-            async getAIResponse(userMessage) {
-                // Use Gemini API if configured
-                if (this.config.useGeminiAPI && this.config.geminiApiKey !== 'YOUR_GEMINI_API_KEY_HERE') {
-                    try {
-                        return await this.getGeminiResponse(userMessage);
-                    } catch (error) {
-                        console.error('Gemini API error:', error);
-                        // Fallback to predefined responses
-                        return this.getFallbackResponse(userMessage);
-                    }
-                } else {
-                    // Use intelligent predefined responses
-                    return this.getFallbackResponse(userMessage);
-                }
-            },
-
-            // Gemini API integration
-            async getGeminiResponse(userMessage) {
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.config.geminiApiKey}`;
-                
-                const systemPrompt = `You are a professional AI assistant for ${this.config.companyName}, a premium digital agency. 
-                
-Company Information:
-- Services: ${this.config.companyInfo.services.join(', ')}
-- Description: ${this.config.companyInfo.description}
-- Contact: ${this.config.companyInfo.contact}
-- Portfolio: ${this.config.companyInfo.portfolio.join(', ')}
-
-Instructions:
-- Be professional, friendly, and helpful
-- Focus only on Creative Global services and business topics
-- Keep responses concise (2-4 sentences)
-- Provide actionable information
-- If asked about unrelated topics, politely redirect to Creative Global services
-- Use emojis sparingly for a premium feel
-- Never mention you're an AI or have limitations
-- Act as a knowledgeable business representative`;
-
-                const requestBody = {
-                    contents: [{
-                        parts: [{
-                            text: `${systemPrompt}\n\nUser: ${userMessage}\n\nAssistant:`
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 200,
-                    }
-                };
-
-                const response = await fetch(apiUrl, {
+            this.addMessage(text, 'user');
+            input.value = '';
+            
+            try {
+                const res = await fetch('http://localhost:3000/api/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userMessage: text })
                 });
+                const data = await res.json();
+                this.addMessage(data.reply, 'ai');
 
-                if (!response.ok) {
-                    throw new Error('Gemini API request failed');
+                if (data.category) {
+                    this.showContactButtons();
                 }
-
-                const data = await response.json();
-                return data.candidates[0].content.parts[0].text.trim();
-            },
-
-            // Intelligent fallback responses
-            getFallbackResponse(userMessage) {
-                const msg = userMessage.toLowerCase();
-
-                // Services
-                if (msg.includes('service') || msg.includes('what do you do') || msg.includes('what can you do')) {
-                    return `We specialize in 6 core areas: 🎨 **Web Development**, 🖌️ **UI/UX Design**, ✨ **Branding**, 🤖 **AI Solutions**, 🎬 **3D & Motion Design**, and ⚡ **Performance Engineering**. Which area interests you most?`;
-                }
-
-                // Pricing
-                if (msg.includes('price') || msg.includes('cost') || msg.includes('pricing') || msg.includes('how much')) {
-                    return `Our pricing varies based on project scope and requirements. Most web projects start around $5,000-$15,000, while comprehensive brand identities range from $10,000-$30,000. Let's discuss your specific needs! Contact us at ${this.config.companyInfo.contact} 📧`;
-                }
-
-                // Start project
-                if (msg.includes('start') || msg.includes('begin') || msg.includes('hire') || msg.includes('work with')) {
-                    return `Excellent! Here's how to start: 1️⃣ Email us at ${this.config.companyInfo.contact} with your project idea, 2️⃣ We'll schedule a discovery call, 3️⃣ Receive a tailored proposal within 48 hours. Ready to build something amazing? 🚀`;
-                }
-
-                // AI Solutions
-                if (msg.includes('ai solution') || msg.includes('artificial intelligence') || msg.includes('machine learning') || msg.includes('automation')) {
-                    return `Our AI Solutions include intelligent automation, chatbots like this one, recommendation engines, data analytics, and custom ML models. We help businesses leverage AI to streamline operations and unlock new possibilities. Want to explore AI for your business? 🤖✨`;
-                }
-
-                // eCommerce
-                if (msg.includes('ecommerce') || msg.includes('e-commerce') || msg.includes('online store') || msg.includes('shop')) {
-                    return `Absolutely! We build high-performance eCommerce platforms with features like 3D product visualization, AI recommendations, seamless checkout, inventory management, and blazing-fast performance. Recent work includes Stellar Commerce with immersive product experiences. 🛒💳`;
-                }
-
-                // 3D / Design
-                if (msg.includes('3d') || msg.includes('three') || msg.includes('motion') || msg.includes('animation')) {
-                    return `We create stunning 3D experiences using Three.js, WebGL, and motion design. From immersive product showcases to interactive brand worlds, we bring digital experiences to life with cinematic quality. Check out our work like Pulse Studio! 🎬✨`;
-                }
-
-                // Branding
-                if (msg.includes('brand') || msg.includes('logo') || msg.includes('identity')) {
-                    return `Our branding services cover complete visual identities: logos, color systems, typography, brand guidelines, and motion assets. We build brands that tell compelling stories and create lasting connections. See our Quantum Brand project! 🎨🔥`;
-                }
-
-                // Portfolio / Work
-                if (msg.includes('portfolio') || msg.includes('work') || msg.includes('project') || msg.includes('example')) {
-                    return `Check out our featured work: **Nexus AI Platform** (AI analytics), **Stellar Commerce** (3D eCommerce), **Quantum Brand** (Brand identity), and **Pulse Studio** (Interactive 3D portfolio). Scroll up to the Work section to see more! 🎯`;
-                }
-
-                // Contact
-                if (msg.includes('contact') || msg.includes('email') || msg.includes('phone') || msg.includes('reach')) {
-                    return `📧 **Email:** ${this.config.companyInfo.contact}\n🌐 **Website:** You're already here!\n💬 **Chat:** You're talking to me right now!\n\nFeel free to reach out anytime. We typically respond within 24 hours! ⚡`;
-                }
-
-                // Timeline
-                if (msg.includes('how long') || msg.includes('timeline') || msg.includes('duration') || msg.includes('time frame')) {
-                    return `Project timelines vary: Small websites take 2-4 weeks, full web applications 6-12 weeks, and comprehensive brand systems 4-8 weeks. Rush projects available with premium rates. Let's discuss your deadline! ⏱️`;
-                }
-
-                // Technology
-                if (msg.includes('technology') || msg.includes('tech stack') || msg.includes('tools') || msg.includes('framework')) {
-                    return `We work with cutting-edge tech: React, Next.js, Three.js, GSAP, Tailwind CSS, Node.js, Python, TensorFlow for AI, and more. We choose the best tools for each project's unique needs. Performance and scalability are always priorities! 💻⚡`;
-                }
-
-                // Web development
-                if (msg.includes('web dev') || msg.includes('website') || msg.includes('web app') || msg.includes('build')) {
-                    return `We build custom, high-performance websites and web applications from scratch. Specialties include immersive 3D experiences, smooth animations, blazing-fast load times, and mobile-first responsive design. What kind of website do you need? 🌐✨`;
-                }
-
-                // UI/UX
-                if (msg.includes('ui') || msg.includes('ux') || msg.includes('design') || msg.includes('interface')) {
-                    return `Our UI/UX design creates beautiful, intuitive interfaces users love. We focus on user research, wireframing, prototyping, visual design, and usability testing. Every pixel serves a purpose. Want to see our design process? 🎨📱`;
-                }
-
-                // Consultation
-                if (msg.includes('consult') || msg.includes('meeting') || msg.includes('call') || msg.includes('discuss')) {
-                    return `We offer free 30-minute consultation calls to discuss your project! Email us at ${this.config.companyInfo.contact} with some details about what you're building, and we'll schedule a time that works for you. Looking forward to it! 📞✨`;
-                }
-
-                // Greeting
-                if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey') || msg === 'yo') {
-                    return `Hey there! 👋 I'm the Creative Global AI assistant. I can help you learn about our services, start a project, or answer questions about web development, design, branding, and AI solutions. What can I help you with today?`;
-                }
-
-                // Thanks
-                if (msg.includes('thank') || msg.includes('thanks')) {
-                    return `You're very welcome! 😊 Feel free to ask me anything else about Creative Global, or reach out directly at ${this.config.companyInfo.contact}. We're excited to work with you! ✨`;
-                }
-
-                // Goodbye
-                if (msg.includes('bye') || msg.includes('goodbye') || msg.includes('see you')) {
-                    return `Thanks for chatting! 👋 Feel free to come back anytime you have questions. Looking forward to working with you on your next project! 🚀`;
-                }
-
-                // Default - redirect to services
-                return `Great question! I'm here to help with information about Creative Global's services, projects, pricing, and how we can work together. Try asking about our **Web Development**, **UI/UX Design**, **Branding**, **AI Solutions**, or **3D & Motion** services! What would you like to know? 🎯`;
-            },
-
-            // Show typing indicator
-            showTypingIndicator() {
-                this.state.isTyping = true;
-                const typingHtml = `
-                    <div class="chat-message ai typing-indicator">
-                        <div class="message-avatar ai">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 8V4H8"/>
-                                <rect width="16" height="12" x="4" y="8" rx="2"/>
-                                <path d="M2 14h2"/>
-                                <path d="M20 14h2"/>
-                                <path d="M15 13v2"/>
-                                <path d="M9 13v2"/>
-                            </svg>
-                        </div>
-                        <div class="typing-dots">
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                        </div>
-                    </div>
-                `;
-                this.elements.messages.insertAdjacentHTML('beforeend', typingHtml);
-                this.scrollToBottom();
-            },
-
-            // Hide typing indicator
-            hideTypingIndicator() {
-                this.state.isTyping = false;
-                const typingIndicator = this.elements.messages.querySelector('.typing-indicator');
-                if (typingIndicator) {
-                    typingIndicator.remove();
-                }
-            },
-
-            // Add message to chat
-            addMessage(content, sender = 'ai', saveToHistory = true) {
-                const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                
-                const messageHtml = `
-                    <div class="chat-message ${sender}">
-                        <div class="message-avatar ${sender}">
-                            ${sender === 'ai' ? `
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 8V4H8"/>
-                                    <rect width="16" height="12" x="4" y="8" rx="2"/>
-                                    <path d="M2 14h2"/>
-                                    <path d="M20 14h2"/>
-                                    <path d="M15 13v2"/>
-                                    <path d="M9 13v2"/>
-                                </svg>
-                            ` : `
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                            `}
-                        </div>
-                        <div>
-                            <div class="message-content">${content}</div>
-                            <div class="message-time">${time}</div>
-                        </div>
-                    </div>
-                `;
-
-                this.elements.messages.insertAdjacentHTML('beforeend', messageHtml);
-                this.scrollToBottom();
-
-                // Save to history
-                if (saveToHistory) {
-                    this.state.chatHistory.push({ content, sender, time });
-                    this.saveChatHistory();
-                }
-            },
-
-            // Scroll to bottom
-            scrollToBottom() {
-                setTimeout(() => {
-                    this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
-                }, 100);
-            },
-
-            // Save chat history to localStorage
-            saveChatHistory() {
-                try {
-                    const historyToSave = this.state.chatHistory.slice(-this.config.maxHistoryLength);
-                    localStorage.setItem(this.config.storageKey, JSON.stringify(historyToSave));
-                } catch (error) {
-                    console.error('Failed to save chat history:', error);
-                }
-            },
-
-            // Load chat history from localStorage
-            loadChatHistory() {
-                try {
-                    const saved = localStorage.getItem(this.config.storageKey);
-                    if (saved) {
-                        this.state.chatHistory = JSON.parse(saved);
-                        // Optionally restore messages to UI
-                        // this.state.chatHistory.forEach(msg => this.addMessage(msg.content, msg.sender, false));
-                    }
-                } catch (error) {
-                    console.error('Failed to load chat history:', error);
-                }
+            } catch (e) {
+                this.addMessage("Server is offline. Start your node server!", 'ai');
             }
-        };
+        },
 
-        // Initialize chatbot when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            ChatbotSystem.init();
-        });
+        addMessage(text, sender) {
+            const area = document.getElementById('chatbot-messages');
+            area.insertAdjacentHTML('beforeend', `<div class="chat-message ${sender}"><div class="message-content">${text}</div></div>`);
+            area.scrollTop = area.scrollHeight;
+        },
 
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
+        showContactButtons() {
+            const msgArea = document.getElementById('chatbot-messages');
+            msgArea.insertAdjacentHTML('beforeend', `
+                <div style="padding:10px;">
+                    <a href="https://wa.me/94XXXXXXXXX" style="color: #0A84FF; text-decoration:underline;">WhatsApp Us</a>
+                </div>`);
+        }
+    };
+
+    document.getElementById('chatbot-send-btn').addEventListener('click', () => ChatbotSystem.sendMessage());
+</script>
 </body>
 </html>
